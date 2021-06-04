@@ -1,0 +1,38 @@
+<div class="background-base p-3">
+    <h1 class="title-text"><span class="yellow-text">D</span>o Backup</h1>
+    <div class="white-indication-subtitle">By doing backup every day of takes ensure you to never loose your work! You can rename them later in a project.</div>
+    <div class="flex-row d-flex">
+        <div class="flex-column d-flex w-50">
+            <div class="white-indication-title p-2"><span class="yellow-text">S</span>ource</div>
+            <div class="flex-column d-flex flex-fill p-2">
+                <div class="white-indication-subtitle p-2"><fa-icon *ngIf="sourceFolder!=''" [icon]="faSave" class="mr-2"></fa-icon>{{sourceFolder}}</div>
+                <div class="button-action-simple" (click)="selectFolder(true)">{{getTextFolder(true)}}</div>
+            </div>
+        </div>
+        <div class="flex-column d-flex w-50">
+            <div class="white-indication-title p-2"><span class="yellow-text">D</span>estinations</div>
+            <div class="flex-column d-flex w-100 overflow-auto" style="max-height: 450px;">
+                <div class="flex-column d-flex flex-fill p-2" *ngFor="let destination of destinations; let i=index;">
+                    <div class="white-indication-subtitle p-2"><fa-icon *ngIf="destinations[i]!=''" [icon]="faSave" class="mr-2"></fa-icon>{{destinations[i]}}</div>
+                    <div class="flex-row d-flex flex-fill">
+                        <div class="button-action-simple" (click)="selectFolder(false, i)">{{getTextFolder(false, i)}}</div>
+                        <button type="button" class="btn btn-danger ml-2" *ngIf="i>0" (click)="removeDestination(i)" style="width: 47px;font-weight: bold;border-radius: 50%;font-size: 22px;"><fa-icon [icon]="faFolderMinus"></fa-icon></button>
+                    </div>
+                </div>
+            </div>
+            <div class="flex-fill p-2">
+                <button type="button" class="btn btn-success" (click)="addDestination()" style="width: 47px;font-weight: bold;border-radius: 50%;font-size: 22px;"><fa-icon [icon]="faFolderPlus"></fa-icon></button>
+            </div>
+        </div>
+    </div>
+    <div class="button-action" (click)="compareFolder([], true)">Start backup</div>
+    <div class="button-action button-action-secondary" style="right: 260px;" (click)="compareFolder()">Compare</div>
+</div>
+<app-loader [loading]="loading"></app-loader>
+<div *ngIf="compareStatus != ''">
+    <div class="position-absolute w-100 h-100" style="z-index: 1000;top:0;left:0;">
+        <div class="d-flex flex-row align-items-center justify-content-center h-100 w-100">
+            <div class="white-indication-title" style="margin-top: 100px;">{{compareStatus}}</div>
+        </div>
+    </div>
+</div>

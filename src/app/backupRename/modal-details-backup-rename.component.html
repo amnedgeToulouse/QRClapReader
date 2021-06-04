@@ -1,0 +1,27 @@
+<div class="modal-header">
+  <h4 class="modal-title">Backup rename details</h4>
+  <button type="button" class="close" data-dismiss="modal" aria-hidden="true"
+      (click)="cancel()">&times;</button>
+</div>
+<div class="modal-body" style="max-height: 592px;overflow: auto;">
+    <mat-expansion-panel hideToggle="true" expanded="true">
+        <mat-expansion-panel-header>
+            <mat-panel-title class="w-100 font-weight-bold user-select-none">
+            <fa-icon [icon]="faSave" class="mr-2"></fa-icon>{{folder}}
+            </mat-panel-title>
+            <mat-panel-description style="min-width: 221px;">
+            <div>
+                <span class="red-text font-weight-bold user-select-none ml-4">missing: {{missingFile.length}}</span>
+            </div>
+            </mat-panel-description>
+        </mat-expansion-panel-header>
+        <div *ngFor="let missing of missingFile">
+            <span style="font-weight: 500;">{{missing}}</span><span class="red-text" style="font-weight: 500;"> is missing.</span>
+        </div>
+    </mat-expansion-panel>
+</div>
+<div class="modal-footer d-flex flex-row">
+    <button (click)="cancel()" type="button" class="btn btn-secondary">
+        <span>Close</span>
+    </button>
+</div>

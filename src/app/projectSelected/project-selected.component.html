@@ -1,0 +1,9 @@
+<div class="background-base p-3">
+    <app-loader [loading]="loading"></app-loader>
+    <h1 class="title-text"><span class="yellow-text">A</span>nalyse Folder (1/3)</h1>
+    <div class="white-indication-subtitle">By analysing a folder QRClap can find all video with a QR Code then rename all files automatically!</div>
+    <div class="d-flex flex-row align-items-center justify-content-center h-75 w-100">
+        <div class="button-action button-action-center mr-2 button-action-secondary" *ngIf="canBeBackupRename" (click)="backupRename()">Backup Rename</div>
+        <div class="button-action button-action-center" (click)="selectFolder()">Select Rush Folder</div>
+    </div>
+</div>

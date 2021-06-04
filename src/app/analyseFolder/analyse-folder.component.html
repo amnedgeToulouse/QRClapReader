@@ -1,0 +1,9 @@
+<div class="background-base-no-navbar p-3">
+    <h1 class="title-text"><span class="yellow-text">A</span>nalyse in progress (2/3)</h1>
+    <div class="white-indication-subtitle">Analysing <span class="yellow-text">{{getFolderAnalysed()}}</span>. Time depends of file number to proceed..</div>
+    <div class="d-flex flex-column align-items-center justify-content-center h-75 w-100">
+        <mat-spinner></mat-spinner>
+        <div class="white-indication-text p-2">{{getStatus()}}</div>
+    </div>
+    <div (click)="cancel()" class="button-action button-action-danger">Cancel</div>
+</div>

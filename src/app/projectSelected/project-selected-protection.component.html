@@ -1,0 +1,22 @@
+<div class="modal-header">
+  <h4 class="modal-title">Project is in protection mode</h4>
+  <button type="button" class="close" data-dismiss="modal" aria-hidden="true"
+      (click)="cancel()">&times;</button>
+</div>
+<div class="modal-body">
+    <div class="p-2 black-indication-text">Project is in protection mode, to avoid this please reselect or delete files from cloud project:</div>
+    <div class="p-2 black-indication-text">Parent folder: <span class="font-italic">{{parentFolder}}</span></div>
+    <div class="overflow-auto" style="max-height: 400px;">
+        <div class="d-flex flex-row" *ngFor="let file of fileMissing">
+            <div class="flex-fill red-indication-text p-1">{{file.name}}</div>
+        </div>
+    </div>
+</div>
+<div class="modal-footer d-flex flex-row">
+    <button (click)="cancel()" type="button" class="btn btn-secondary">
+        <span>Close</span>
+    </button>
+    <button (click)="ignore()" type="button" class="btn btn-warning">
+        <span>Ignore</span>
+    </button>
+</div>

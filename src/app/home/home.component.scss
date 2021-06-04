@@ -1,0 +1,37 @@
+.project-card {
+  margin-top: 10px;
+  width: 1050px;
+  height: 78px;
+  padding-left: 25px;
+  padding-right: 25px;
+  background-color: #404040;
+  box-shadow: 5px 5px 20px 0 rgba(0, 0, 0, 0.4);
+}
+
+.project-name {
+  color: #ffffff !important;
+  font-weight: 400 !important;
+  font-size: 1.875rem !important;
+  line-height: 1.2 !important;
+  font-family: Oswald, sans-serif !important;
+}
+
+.project-date {
+  font-style: italic;
+  color: #ccd3db !important;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.project-text-info {
+  color: #f1c50e;
+  font-weight: 700;
+  font-size: 1.125rem;
+  line-height: 1.2;
+}
+
+.project-container {
+  width: 1080px;
+  height: 538px;
+  overflow: auto;
+}

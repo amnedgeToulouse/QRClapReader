@@ -1,0 +1,22 @@
+<nav class="navbar navbar-light bg-white position-fixed w-100" style="z-index: 100;" *ngIf="isValidRoute()">
+  <div class="d-flex flex-row align-items-center justify-content-center w-100" style="max-width: 1236px;">
+    <div style="width:75px;">
+      <img src="/assets/icons/logo.png" width="60" height="60" alt="">
+    </div>
+    <div class="p-2" style="width:200px;">
+      <span class="grey-indication-title">QR</span><span class="yellow-indication-title">Clap</span>
+    </div>
+    <div class="p-2" style="width:300px;">
+      <span class="black-indication-text">QR Stock: </span><span class="yellow-indication-text">100/100</span>
+    </div>
+    <div class="p-2 flex-fill">
+      <span *ngIf="getProjectName() != ''" class="black-indication-text">Project: </span><span class="yellow-indication-text">{{getProjectName()}}</span>
+    </div>
+    <div class="p-2" *ngIf="isValidBackToProjectRoute()">
+      <button (click)="leaveProject()" type="button" class="btn btn-primary">{{getLeaveText()}}</button>
+    </div>
+    <div class="p-2" *ngIf="canDecconect()">
+      <button (click)="logout()" type="button" class="btn btn-primary">Logout</button>
+    </div>
+  </div>
+</nav>

@@ -1,0 +1,69 @@
+<div class="modal-header">
+  <h4 class="modal-title">Reconnexion Required</h4>
+</div>
+<div class="modal-body" (keyup.enter)="connect()">
+  <div *ngIf="!loading">
+    <div class="form-group">
+      <label for="exampleInputEmail1">Username</label>
+      <!-- <input [(ngModel)]="mail" type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email"> -->
+      <input [(ngModel)]="mail" type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter username">
+      <small id="emailHelp" class="form-text text-muted">You are not gonna loose what you was doing by reconecting.</small>
+    </div>
+    <div class="form-group">
+      <label for="exampleInputPassword1">Password</label>
+      <input [(ngModel)]="password" type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+    </div>
+    <span id="emailHelp" class="form-text red-text" style="font-weight: bold;">{{error}}</span>
+  </div>
+  <div *ngIf="loading && type == 0" class="d-flex flex-row align-items-center justify-content-center h-100 w-100">
+    <div class="spinner-grow text-primary" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+    <div class="spinner-grow text-secondary" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+    <div class="spinner-grow text-success" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+    <div class="spinner-grow text-danger" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+    <div class="spinner-grow text-warning" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+    <div class="spinner-grow text-info" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+    <div class="spinner-grow text-dark" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+  </div>
+  <div *ngIf="loading && type == 1" class="d-flex flex-row align-items-center justify-content-center h-100 w-100">
+    <div class="spinner-border text-primary" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+    <div class="spinner-border text-secondary" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+    <div class="spinner-border text-success" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+    <div class="spinner-border text-danger" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+    <div class="spinner-border text-warning" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+    <div class="spinner-border text-info" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+    <div class="spinner-border text-dark" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+  </div>
+</div>
+<div class="modal-footer" *ngIf="!loading">
+  <button (click)="connect()" [disabled]="!validateForm()" type="button" class="btn btn-primary">
+      <span>Reconnect</span>
+  </button>
+</div>
