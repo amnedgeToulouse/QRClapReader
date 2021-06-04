@@ -23,7 +23,7 @@ export class BackupRenameComponent implements OnInit, OnDestroy {
   public renderer: IpcRenderer;
   public remote: Remote;
   public destinations: any[] = [{
-    destination: "F:\\Dropbox\\CameraQRCode\\LecteurElectron\\TestFolder",
+    destination: "",
     files: [],
     missingFilesList: [],
     missingFiles: 0,

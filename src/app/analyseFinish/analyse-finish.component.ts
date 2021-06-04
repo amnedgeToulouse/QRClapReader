@@ -600,12 +600,12 @@ export class AnalyseFinishComponent implements OnInit, OnDestroy {
             modalRef.componentInstance.message = "The rename has been completed successfully !";
             modalRef.componentInstance.cancelButtonType = 1;
             modalRef.componentInstance.canConfirm = false;
-            modalRef.componentInstance.actionCancelButtonMessage = "Go to projects";
+            modalRef.componentInstance.actionCancelButtonMessage = "Go to backup rename";
             modalRef.result.then(
               result => { },
               reason => {
                 this.loading = false;
-                this.router.navigate(['/home'], { queryParams: { token: this.saveParam.GetParam("token") } });
+                this.router.navigate(['/backupRename'], this.getParam.GetQueryParams());
               }
             );
           });

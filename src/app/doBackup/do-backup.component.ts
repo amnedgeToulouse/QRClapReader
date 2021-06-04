@@ -18,8 +18,8 @@ export class DoBackupComponent implements OnInit, OnDestroy {
 
   public renderer: IpcRenderer;
   public remote: Remote;
-  public sourceFolder: string = "F:\\Dropbox\\CameraQRCode\\LecteurElectron\\Test Copy 2";
-  public destinations: string[] = ["F:\\Dropbox\\CameraQRCode\\LecteurElectron\\Test Copy 3"];
+  public sourceFolder: string = "";
+  public destinations: string[] = [""];
 
   loading = false;
   faFolderMinus = faFolderMinus;
