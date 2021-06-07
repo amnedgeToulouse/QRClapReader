@@ -7,6 +7,7 @@ import { ElectronService } from 'ngx-electron';
 import { ModalComponent } from '../shared/components/modal/modal.component';
 import { GetParamService } from '../shared/service/get-param.service';
 import { SaveParamService } from '../shared/service/save-param';
+import { Utils } from '../shared/service/utils';
 import { ModalCompareComponent } from './modal-compare.component';
 
 @Component({
@@ -25,6 +26,8 @@ export class DoBackupComponent implements OnInit, OnDestroy {
   faFolderMinus = faFolderMinus;
   faFolderPlus = faFolderPlus;
   faSave = faSave;
+
+  progress = 0;
 
   lastCompare = {};
 
@@ -83,9 +86,48 @@ export class DoBackupComponent implements OnInit, OnDestroy {
     return true;
   }
 
+  progressRounded() {
+    return Math.round(this.progress);
+  }
+
+  backupSpeed = 0;
+  actualParcours = 0;
+  lastValue = 0;
+  speedTab = [];
+  iteSpeedTab = 0;
+  maxSpeedTab = 20;
+  speedInterval = null;
+  timeLeft = "00:00:00";
+  left = 0;
+
   startBackup(filter = []) {
     if (!this.checkCanStart()) return;
+    this.progress = 0;
     this.loading = true;
+    this.backupSpeed = 0;
+    this.lastValue = 0;
+    this.speedTab = [];
+    this.iteSpeedTab = 0;
+    this.timeLeft = "00:00:00";
+    this.left = 0;
+    this.speedInterval = setInterval(() => {
+      if (this.actualParcours != 0) {
+        const lastParcour = this.actualParcours - this.lastValue;
+        this.lastValue = this.actualParcours;
+        this.speedTab[this.iteSpeedTab++] = lastParcour * 10;
+        if (this.iteSpeedTab >= this.maxSpeedTab) {
+          this.iteSpeedTab = 0;
+        }
+        this.backupSpeed = 0;
+        for (const speed of this.speedTab) {
+          this.backupSpeed += speed;
+        }
+        this.backupSpeed /= this.maxSpeedTab;
+        if (this.backupSpeed != 0) {
+          this.timeLeft = Utils.ConvertSecondToTimeLeft(this.left / this.backupSpeed)
+        }
+      }
+    }, 100)
     this.renderer.removeAllListeners("backup-folder-status");
     this.compareStatus = "Start backup in " + this.destinations.length + " " + (this.destinations.length > 1 ? "folders" : "folder");
     setTimeout(async () => {
@@ -96,12 +138,21 @@ export class DoBackupComponent implements OnInit, OnDestroy {
       });
     }, 1000);
     this.renderer.on("backup-folder-status", (event, arg) => {
-      this.compareStatus = "Copy file: " + arg.filename + " (" + arg.current + "/" + arg.total + ")";
+      const totalDone = arg.totalDone + arg.completedSize;
+      this.progress = Math.round(totalDone / arg.totalSize * 10000.0) / 100.0;
+      this.compareStatus = "Copy to folder : " + arg.folder + " (" + arg.folderActual + "/" + arg.folderTotal + ")";
+      this.actualParcours = totalDone;
+      this.left = arg.totalSize - totalDone;
       this.ref.detectChanges();
     });
     this.renderer.once("backup-complete", (event, arg) => {
+      if (this.speedInterval != null) {
+        clearInterval(this.speedInterval);
+        this.speedInterval = null;
+      }
       this.loading = false;
       this.compareStatus = "";
+      this.progress = 0;
       this.compareFolder(filter);
       if (arg) {
         const modalRef = this.modalService.open(ModalComponent);
@@ -189,7 +240,6 @@ export class DoBackupComponent implements OnInit, OnDestroy {
           }
         }
       }
-      console.log(this.lastCompare);
       setTimeout(() => {
         this.compareStatus = "";
         this.loading = false;
@@ -220,7 +270,13 @@ export class DoBackupComponent implements OnInit, OnDestroy {
             }
           }
         }
-        if (!autostart) {
+        const filter = [];
+        for (const destination in fileState['diskError']) {
+          for (const file of fileState['diskError'][destination]) {
+            filter.push(destination + file['file']);
+          }
+        }
+        if (!autostart || filter.length == 0) {
           const modalRef = this.modalService.open(ModalCompareComponent, { size: "xl", backdrop: 'static' });
           modalRef.componentInstance.fileState = fileState;
           modalRef.componentInstance.parent = this;
@@ -229,16 +285,8 @@ export class DoBackupComponent implements OnInit, OnDestroy {
             reason => { }
           );
         } else {
-          const filter = [];
-          for (const destination in fileState['diskError']) {
-            for (const file of fileState['diskError'][destination]) {
-              filter.push(destination + file['file']);
-            }
-          }
-          console.log(filter);
           this.startBackup(filter);
         }
-        console.log(fileState);
       }, 1000);
     });
   }

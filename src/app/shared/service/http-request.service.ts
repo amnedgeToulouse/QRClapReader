@@ -125,7 +125,6 @@ export class HttpRequestService {
 
     popupNeedToken = false;
     CheckNeedToken() {
-        console.log(this.router.url);
         if (!this.router.url.includes("/connexion") && !this.CheckToken() && !this.popupNeedToken && !this.router.url.includes("/backupRename") && !this.router.url.includes("/doBackup")) {
             this.popupNeedToken = true;
             console.log("Open need token");

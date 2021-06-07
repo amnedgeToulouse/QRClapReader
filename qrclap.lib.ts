@@ -20,6 +20,7 @@ const ncp = require('ncp').ncp;
 const md5File = require('md5-file');
 const copydir = require('copy-dir');
 const rootPath = require('electron-root-path').rootPath;
+const cpy = require('cpy');
 
 ncp.limit = 16;
 
@@ -733,39 +734,72 @@ function sleep(ms) {
     });
 }
 
+function getFilesizeInBytes(filename) {
+    var stats = fs.statSync(filename);
+    var fileSizeInBytes = stats.size;
+    return fileSizeInBytes;
+}
+
 ipcMain.on("backup-folder", async (event, arg) => {
     const source = arg.source;
     const destinations = arg.destinations;
     const filter = arg.filter;
-    const statToSend = {
-        current: 0,
-        total: 0,
-        filename: ""
-    }
-    const filterFunc = (src, dest) => {
-        if (fs.lstatSync(src).isFile()) {
-            statToSend.current++;
-            statToSend.filename = src.replaceAll("\\", "/").replace(source.replaceAll("\\", "/"), "");
-            event.reply("backup-folder-status", statToSend);
-            return typeof filter == "undefined" || filter.length == 0 || filter.includes(dest.replaceAll("\\", "/"));
-        } else {
-            return true;
-        }
-    }
+    // const statToSend = {
+    //     current: 0,
+    //     total: 0,
+    //     filename: ""
+    // }
+    // const filterFunc = (src, dest) => {
+    //     if (fs.lstatSync(src).isFile()) {
+    //         statToSend.current++;
+    //         statToSend.filename = src.replaceAll("\\", "/").replace(source.replaceAll("\\", "/"), "");
+    //         event.reply("backup-folder-status", statToSend);
+    //         return typeof filter == "undefined" || filter.length == 0 || filter.includes(dest.replaceAll("\\", "/"));
+    //     } else {
+    //         return true;
+    //     }
+    // }
     getFiles(source, false).then(async (sourceFiles) => {
-        statToSend.total = sourceFiles.length * destinations.length;
-        var i = 0;
-        var lastCurrent = statToSend.current;
-        while (i < destinations.length) {
+        var totalSize = 0;
+        var totalDone = 0;
+        for (var i = 0; i < destinations.length; i++) {
+            const destination = destinations[i];
+            const fileList = [];
+            for (const sourceFile of sourceFiles) {
+                if (typeof filter == "undefined" || filter.length == 0 || filter.includes(sourceFile.replace(source.replaceAll("\\", "/"), destination.replaceAll("\\", "/")).replaceAll("\\", "/"))) {
+                    fileList.push(sourceFile);
+                }
+            }
+            if (fileList.length != 0) {
+                for (const file of fileList) {
+                    totalSize += getFilesizeInBytes(file);
+                }
+            }
+        }
+        for (var i = 0; i < destinations.length; i++) {
             try {
-                fsExtra.copySync(source, destinations[i], { filter: filterFunc });
+                const destination = destinations[i];
+                const fileList = [];
+                for (const sourceFile of sourceFiles) {
+                    if (typeof filter == "undefined" || filter.length == 0 || filter.includes(sourceFile.replace(source.replaceAll("\\", "/"), destination.replaceAll("\\", "/")).replaceAll("\\", "/"))) {
+                        fileList.push(sourceFile);
+                    }
+                }
+                if (fileList.length != 0) {
+                    var totalFolder = 0;
+                    for (const file of fileList) {
+                        totalFolder += getFilesizeInBytes(file);
+                    }
+                    await cpy(fileList, destination).on('progress', progress => {
+                        event.reply("backup-folder-status", { ...progress, totalSize: totalSize, folder: destination, folderActual: i + 1, folderTotal: destinations.length, totalDone: totalDone });
+                    });
+                    totalDone += totalFolder;
+                }
             } catch (error) {
                 console.log(error);
                 i--;
-                statToSend.current = lastCurrent;
                 await sleep(1000);
             }
-            i++;
         }
         event.reply("backup-complete", null);
         console.log('done!');
