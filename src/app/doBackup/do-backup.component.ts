@@ -34,7 +34,6 @@ export class DoBackupComponent implements OnInit, OnDestroy {
     "progress-bar bg-info",
     "progress-bar bg-warning",
     "progress-bar bg-secondary",
-    "progress-bar bg-light",
   ]
 
   progress = {};
