@@ -13,8 +13,8 @@ import { SaveParamService } from '../shared/service/save-param';
 })
 export class ConnexionComponent implements OnInit {
 
-  username = "qrclap";
-  password = "904054ff3a506f062af1b868463701e85095fd2523f99196bf6da11372d8d58f";
+  username = ""; //qrclap
+  password = ""; //904054ff3a506f062af1b868463701e85095fd2523f99196bf6da11372d8d58f
   loading = true;
   error = "";
   renderer: IpcRenderer;
@@ -59,7 +59,7 @@ export class ConnexionComponent implements OnInit {
   }
 
   canDoBackup() {
-    return this.saveParam.GetParam("firstConnexion") != "";
+    return this.saveParam.GetParam("firstConnexion") != "" || true;
   }
 
 }
