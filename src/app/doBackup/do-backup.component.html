@@ -32,9 +32,12 @@
 <div *ngIf="compareStatus != ''">
     <div class="position-absolute w-100 h-100" style="z-index: 1000;top:0;left:0;">
         <div class="d-flex flex-column align-items-center justify-content-center h-100 w-100">
-            <div class="white-indication-title" [style]="{'margin-top': progress > 0 ? '200px':'100px'}">{{compareStatus}}</div>
-            <mat-progress-bar *ngIf="progress>0" class="progress mt-4" style="width:800px;height:8px;" mode="determinate" [value]="progress"></mat-progress-bar>
-            <div *ngIf="progress>0" class="white-indication-title mt-4">{{progressRounded()}}% - {{timeLeft}}</div>
+            <div class="white-indication-title" [style]="{'margin-top': progressRounded() > 0 ? '200px':'100px'}">{{compareStatus}}</div>
+            <!-- <mat-progress-bar *ngIf="progress>0" class="progress mt-4" style="width:800px;height:8px;" mode="determinate" [value]="progress"></mat-progress-bar> -->
+            <div class="progress w-75" *ngIf="progressRounded()>0">
+                <div *ngFor="let prog of getProgressKey(); let i=index;" [class]="getClassProgress(i)" role="progressbar" [style]="{width: getRoundValue(progress[prog])+'%'}" [attr.aria-valuenow]="getRoundValue(progress[prog])" aria-valuemin="0" aria-valuemax="100">{{getDiskLetter(prog)}}</div>
+            </div>
+            <div *ngIf="progressRounded()>0" class="white-indication-title mt-4">{{progressRounded()}}% - {{timeLeft}}</div>
         </div>
     </div>
 </div>

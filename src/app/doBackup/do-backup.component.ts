@@ -27,7 +27,17 @@ export class DoBackupComponent implements OnInit, OnDestroy {
   faFolderPlus = faFolderPlus;
   faSave = faSave;
 
-  progress = 0;
+  classProgressBar = [
+    "progress-bar",
+    "progress-bar bg-success",
+    "progress-bar bg-danger",
+    "progress-bar bg-info",
+    "progress-bar bg-warning",
+    "progress-bar bg-secondary",
+    "progress-bar bg-light",
+  ]
+
+  progress = {};
 
   lastCompare = {};
 
@@ -86,8 +96,31 @@ export class DoBackupComponent implements OnInit, OnDestroy {
     return true;
   }
 
+  getClassProgress(i) {
+    return this.classProgressBar[i % (this.classProgressBar.length)];
+  }
+
   progressRounded() {
-    return Math.round(this.progress);
+    var totalProg = 0;
+    for (const key in this.progress) {
+      totalProg += this.progress[key];
+    }
+    return Math.round(totalProg);
+  }
+
+  getProgressKey() {
+    const keys = [];
+    for (const key in this.progress)
+      keys.push(key);
+    return keys;
+  }
+
+  getDiskLetter(path) {
+    return path.split(":")[0] + ":";
+  }
+
+  getRoundValue(value) {
+    return Math.round(value);
   }
 
   backupSpeed = 0;
@@ -99,10 +132,11 @@ export class DoBackupComponent implements OnInit, OnDestroy {
   speedInterval = null;
   timeLeft = "00:00:00";
   left = 0;
+  lastFolder = "";
 
   startBackup(filter = []) {
     if (!this.checkCanStart()) return;
-    this.progress = 0;
+    this.progress = {};
     this.loading = true;
     this.backupSpeed = 0;
     this.lastValue = 0;
@@ -139,7 +173,7 @@ export class DoBackupComponent implements OnInit, OnDestroy {
     }, 1000);
     this.renderer.on("backup-folder-status", (event, arg) => {
       const totalDone = arg.totalDone + arg.completedSize;
-      this.progress = Math.round(totalDone / arg.totalSize * 10000.0) / 100.0;
+      this.progress[arg.folder] = Math.round((arg.totalFolderDone + arg.completedSize) / arg.totalSize * 10000.0) / 100.0;
       this.compareStatus = "Copy to folder : " + arg.folder + " (" + arg.folderActual + "/" + arg.folderTotal + ")";
       this.actualParcours = totalDone;
       this.left = arg.totalSize - totalDone;
@@ -152,7 +186,7 @@ export class DoBackupComponent implements OnInit, OnDestroy {
       }
       this.loading = false;
       this.compareStatus = "";
-      this.progress = 0;
+      this.progress = {};
       this.compareFolder(filter);
       if (arg) {
         const modalRef = this.modalService.open(ModalComponent);

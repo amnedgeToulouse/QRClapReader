@@ -782,18 +782,28 @@ ipcMain.on("backup-folder", async (event, arg) => {
                 const fileList = [];
                 for (const sourceFile of sourceFiles) {
                     if (typeof filter == "undefined" || filter.length == 0 || filter.includes(sourceFile.replace(source.replaceAll("\\", "/"), destination.replaceAll("\\", "/")).replaceAll("\\", "/"))) {
-                        fileList.push(sourceFile);
+                        fileList.push(sourceFile.replaceAll("\\", "/"));
                     }
                 }
                 if (fileList.length != 0) {
                     var totalFolder = 0;
+                    var totalFolderDone = 0;
                     for (const file of fileList) {
                         totalFolder += getFilesizeInBytes(file);
                     }
-                    await cpy(fileList, destination).on('progress', progress => {
-                        event.reply("backup-folder-status", { ...progress, totalSize: totalSize, folder: destination, folderActual: i + 1, folderTotal: destinations.length, totalDone: totalDone });
-                    });
-                    totalDone += totalFolder;
+                    for (const fileToProcess of fileList) {
+                        const relative = fileToProcess.replaceAll("\\", "/").replace(source.replaceAll("\\", "/"), "");
+                        const file = relative.split("/");
+                        const destinationFolder = destination.replaceAll("\\", "/") + relative.replace(file[file.length - 1], "").replaceAll("\\", "/");
+                        fs.mkdir(destinationFolder, { recursive: true }, (err) => {
+                            if (err) throw err;
+                        });
+                        await cpy([fileToProcess], destinationFolder).on('progress', progress => {
+                            event.reply("backup-folder-status", { ...progress, totalSize: totalSize, folder: destination, folderActual: i + 1, folderTotal: destinations.length, totalDone: totalDone, totalFolder: totalFolder, totalFolderDone: totalFolderDone });
+                        });
+                        totalDone += getFilesizeInBytes(fileToProcess);
+                        totalFolderDone += getFilesizeInBytes(fileToProcess);
+                    }
                 }
             } catch (error) {
                 console.log(error);
