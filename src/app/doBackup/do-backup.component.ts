@@ -96,7 +96,7 @@ export class DoBackupComponent implements OnInit, OnDestroy {
   }
 
   getClassProgress(i) {
-    return this.classProgressBar[i % (this.classProgressBar.length)];
+    return this.classProgressBar[i % (this.classProgressBar.length)] + " shadow-font-black font-large";
   }
 
   progressRounded() {
@@ -115,7 +115,11 @@ export class DoBackupComponent implements OnInit, OnDestroy {
   }
 
   getDiskLetter(path) {
-    return path.split(":")[0] + ":";
+    if (path.substr(0, 9) == "/Volumes/") {
+      return path.replace("/Volumes/", "").split("/")[0];
+    } else {
+      return path.split(":")[0] + ":";
+    }
   }
 
   getRoundValue(value) {
@@ -147,7 +151,7 @@ export class DoBackupComponent implements OnInit, OnDestroy {
       if (this.actualParcours != 0) {
         const lastParcour = this.actualParcours - this.lastValue;
         this.lastValue = this.actualParcours;
-        this.speedTab[this.iteSpeedTab++] = lastParcour * 10;
+        this.speedTab[this.iteSpeedTab++] = lastParcour;
         if (this.iteSpeedTab >= this.maxSpeedTab) {
           this.iteSpeedTab = 0;
         }
@@ -160,7 +164,7 @@ export class DoBackupComponent implements OnInit, OnDestroy {
           this.timeLeft = Utils.ConvertSecondToTimeLeft(this.left / this.backupSpeed)
         }
       }
-    }, 100)
+    }, 1000);
     this.renderer.removeAllListeners("backup-folder-status");
     this.compareStatus = "Start backup in " + this.destinations.length + " " + (this.destinations.length > 1 ? "folders" : "folder");
     setTimeout(async () => {

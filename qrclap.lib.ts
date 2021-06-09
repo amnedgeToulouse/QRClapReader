@@ -24,8 +24,8 @@ const cpy = require('cpy');
 
 ncp.limit = 16;
 
-const URL_API = "http://localhost:8080/"
-const HOST_API = "localhost"
+const URL_API = "http://api.qrclap.com:8080/"
+const HOST_API = "api.qrclap.com"
 const PORT_API = 8080
 const URL_WORDPRESS = "https://qrclap.com/"
 const HOST_WORDPRESS = "qrclap.com"
@@ -361,8 +361,8 @@ var sendProject = (project, event) => {
         });
         const projectJson = JSON.stringify(project);
         const options = {
-            hostname: 'localhost',
-            port: 8080,
+            hostname: HOST_API,
+            port: PORT_API,
             path: '/qrclap/createproject',
             method: 'POST',
             headers: {
@@ -413,8 +413,8 @@ var sendQR = (file, qr, event, resolveMain = null) => {
             file: { id: file.id }
         });
         const options = {
-            hostname: 'localhost',
-            port: 8080,
+            hostname: HOST_API,
+            port: PORT_API,
             path: '/qrclap/scanqr',
             method: 'POST',
             headers: {

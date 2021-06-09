@@ -15,6 +15,8 @@ import { SaveParamService } from '../shared/service/save-param';
 })
 export class HomeComponent implements OnInit {
 
+  loading = true;
+
   projectSelected = "";
 
   searchValue = "";
@@ -54,6 +56,7 @@ export class HomeComponent implements OnInit {
         }
         this.projectLoaded = true;
         this.updateFilter();
+        this.loading = false;
       }
     });
   }
