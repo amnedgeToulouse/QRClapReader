@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { IpcRenderer } from 'electron';
+import { ElectronService } from 'ngx-electron';
 import { GetParamService } from '../../service/get-param.service';
 import { HttpRequestService } from '../../service/http-request.service';
 import { ModalComponent } from '../modal/modal.component';
@@ -14,14 +16,47 @@ export class NavBarComponent implements OnInit {
 
   validRoute = ['/home', '/projectSelected', '/analyseFinish', '/doBackup', '/backupRename'];
   validBackToProjectRoute = ['/projectSelected', '/analyseFinish', '/doBackup', '/backupRename'];
+  public renderer: IpcRenderer;
+  version = "";
+  updateMessage = "";
+  showNotification = false;
+  canApplyMaj = false;
+  interval = null;
 
   constructor(private router: Router,
     private activatedRoute: ActivatedRoute,
     private modalService: NgbModal,
     private getParam: GetParamService,
-    private httpRequest: HttpRequestService) { }
+    electronServiceInstance: ElectronService,
+    private httpRequest: HttpRequestService) {
+    this.renderer = electronServiceInstance.ipcRenderer;
+  }
 
   ngOnInit(): void {
+    this.renderer.send('app_version');
+    this.renderer.on('app_version', (event, arg) => {
+      this.renderer.removeAllListeners('app_version');
+      this.version = arg.version;
+    });
+    this.renderer.on('update_available', () => {
+      this.renderer.removeAllListeners('update_available');
+      this.updateMessage = 'A new update is available. Downloading now...';
+      this.showNotification = true;
+    });
+    this.renderer.on('update_downloaded', () => {
+      this.renderer.removeAllListeners('update_downloaded');
+      this.updateMessage = 'Update Downloaded. It will be installed on restart. Restart now?';
+      this.showNotification = true;
+      this.canApplyMaj = true;
+    });
+  }
+
+  closeNotification() {
+    this.showNotification = false;
+  }
+
+  restartApp() {
+    this.renderer.send('restart_app');
   }
 
   isValidRoute() {

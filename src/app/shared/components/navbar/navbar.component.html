@@ -4,9 +4,9 @@
       <img src="/assets/icons/logo.png" width="60" height="60" alt="">
     </div>
     <div class="p-2" style="width:200px;">
-      <span class="grey-indication-title">QR</span><span class="yellow-indication-title">Clap</span>
+      <span class="grey-indication-title">QR</span><span class="yellow-indication-title">Clap {{version}}</span>
     </div>
-    <div class="p-2" style="width:300px;">
+    <div class="p-2" style="width:300px; margin-top: 5px;">
       <span class="black-indication-text">QR Stock: </span><span class="yellow-indication-text">100/100</span>
     </div>
     <div class="p-2 flex-fill">
@@ -20,3 +20,8 @@
     </div>
   </div>
 </nav>
+<div id="notification" *ngIf="showNotification">
+  <p id="message">{{updateMessage}}</p>
+  <button (click)="closeNotification()" type="button" class="btn btn-danger">Close</button>
+  <button (click)="restartApp()" *ngIf="canApplyMaj" type="button" class="btn btn-success">Restart</button>
+</div>

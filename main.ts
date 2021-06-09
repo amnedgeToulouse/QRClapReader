@@ -1,4 +1,5 @@
-import { app, BrowserWindow, screen } from 'electron';
+import { app, BrowserWindow, screen, ipcMain } from 'electron';
+const { autoUpdater } = require('electron-updater');
 import * as path from 'path';
 import * as url from 'url';
 
@@ -55,7 +56,9 @@ function createWindow(): BrowserWindow {
     // when you should delete the corresponding element.
     win = null;
   });
-
+  win.once('ready-to-show', () => {
+    autoUpdater.checkForUpdatesAndNotify();
+  });
   return win;
 }
 
@@ -81,6 +84,22 @@ try {
     if (win === null) {
       createWindow();
     }
+  });
+
+  ipcMain.on('app_version', (event) => {
+    event.sender.send('app_version', { version: app.getVersion() });
+  });
+
+  autoUpdater.on('update-available', () => {
+    win.webContents.send('update_available');
+  });
+
+  autoUpdater.on('update-downloaded', () => {
+    win.webContents.send('update_downloaded');
+  });
+
+  ipcMain.on('restart_app', () => {
+    autoUpdater.quitAndInstall();
   });
 
 } catch (e) {

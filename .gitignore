@@ -40,6 +40,8 @@ src/**/*.js
 npm-debug.log
 testem.log
 /typings
+electron-builder.json
+save-param.json
 
 # e2e
 /e2e/*.js
