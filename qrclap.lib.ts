@@ -8,7 +8,7 @@ const ffmpeg =
     (os.type() === "Windows_NT"
         ? appRootDir + "/node_modules/ffmpeg-static/ffmpeg.exe"
         : os.type() === "Darwin"
-            ? appRootDir + "/node_modules/ffmpeg-static/ffmpeg"
+            ? (appRootDir + "/node_modules/ffmpeg-static/ffmpeg").replace("app.asar", "app.asar.unpacked")
             : "").replace(/\\/g, "/");
 const genThumbnail = require("simple-thumbnail");
 const getFiles = require('node-recursive-directory');
