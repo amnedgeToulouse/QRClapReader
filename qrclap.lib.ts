@@ -781,8 +781,11 @@ ipcMain.on("set-saved-param", (event, arg) => {
     return;
 });
 
-const jsonLocation = path.join(rootPath, 'save-param.json');
+const jsonLocation = path.join(os.tmpdir() + "/QRClap", 'save-param.json');
 var getOrCreateSavedParam = () => {
+    if (!fs.existsSync(os.tmpdir() + "/QRClap")) {
+        fs.mkdirSync(os.tmpdir() + "/QRClap");
+    }
     if (!fs.existsSync(jsonLocation)) {
         fs.writeFileSync(jsonLocation, "{}");
     }
