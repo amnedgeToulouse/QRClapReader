@@ -230,7 +230,7 @@ var startProcessThumbnail = (event) => {
                     "ok8"
                 );
                 const qriTmp = fileToProcess.files[fileIte].QRi;
-                getVideoDurationInSeconds(fileToProcess.files[fileIte].path)
+                getVideoDurationInSeconds('"' + fileToProcess.files[fileIte].path + '"')
                     .then((duration) => {
                         event.reply(
                             "debug",
@@ -884,7 +884,7 @@ ipcMain.on("backup-folder", async (event, arg) => {
     });
 });
 
-var getRelativePathFolder = (path, parent) => {
+var getRelativePathFolder = async (path, parent) => {
     return path.replace(parent, "");
 }
 
