@@ -25,3 +25,4 @@
   <button (click)="closeNotification()" type="button" class="btn btn-danger">Close</button>
   <button (click)="restartApp()" *ngIf="canApplyMaj" type="button" class="btn btn-success">Restart</button>
 </div>
+<app-loader [loading]="loading"></app-loader>

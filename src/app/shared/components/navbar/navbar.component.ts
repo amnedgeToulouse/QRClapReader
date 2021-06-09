@@ -22,6 +22,7 @@ export class NavBarComponent implements OnInit {
   showNotification = false;
   canApplyMaj = false;
   interval = null;
+  loading = false;
 
   constructor(private router: Router,
     private activatedRoute: ActivatedRoute,
@@ -56,7 +57,10 @@ export class NavBarComponent implements OnInit {
   }
 
   restartApp() {
-    this.renderer.send('restart_app');
+    this.loading = true;
+    setTimeout(() => {
+      this.renderer.send('restart_app');
+    }, 1000);
   }
 
   isValidRoute() {
