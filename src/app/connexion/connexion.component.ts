@@ -28,6 +28,7 @@ export class ConnexionComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.renderer.send("check-mac-permission");
     this.loading = false;
     if (this.argApp.getQrcFileArg() != "") {
       this.router.navigate(['/backupRename']);

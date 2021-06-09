@@ -641,7 +641,7 @@ export class AnalyseFinishComponent implements OnInit, OnDestroy {
       width: "96px",
       height: "54px",
       cursor: "pointer",
-      "margin-left": qri == 5 ? "10px" : "0px"
+      "margin-left": qri == 2 ? "10px" : "0px"
     }
   }
 

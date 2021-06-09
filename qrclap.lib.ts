@@ -230,75 +230,74 @@ var startProcessThumbnail = (event) => {
                     "ok8"
                 );
                 const qriTmp = fileToProcess.files[fileIte].QRi;
-                /* getVideoDurationInSeconds(fileToProcess.files[fileIte].path)
-                     .then((duration) => {*/
-                const duration = 12;
-                event.reply(
-                    "debug",
-                    "ok9"
-                );
-                fileToProcess.files[fileIte].duration = duration;
-                var timeSeek = elem.time;
-                var endOfFile = elem.endOfFile;
-                var timeSplit = elem.time.replace("-", "").split(":");
-                var seekSecond =
-                    +timeSplit[0] * 3600 + (+timeSplit[1]) * 60 + timeSplit[2];
-                if (+seekSecond >= duration) {
-                    timeSeek = "00:00:00";
-                    endOfFile = false;
-                }
-                var time = Date.now() + "-" + Math.round(Math.random() * 50000);
-                var dir = os.tmpdir() + "/QRClap/" + projectName;
-                dir = dir.replace(/\\/g, "/");
-                if (!fs.existsSync(os.tmpdir() + "/QRClap")) {
-                    fs.mkdirSync(os.tmpdir() + "/QRClap");
-                }
-                if (!fs.existsSync(dir)) {
-                    fs.mkdirSync(dir);
-                }
-                var fileImage = dir + "/" + time + ".jpg";
-                event.reply(
-                    "debug",
-                    "ok10"
-                );
-                genThumbnail(
-                    fileToProcess.files[fileIte].path,
-                    fileImage,
-                    "1920x?",
-                    endOfFile,
-                    {
-                        path: ffmpeg,
-                        seek: timeSeek,
-                    }
-                )
+                getVideoDurationInSeconds(fileToProcess.files[fileIte].path)
+                    .then((duration) => {
+                        event.reply(
+                            "debug",
+                            "ok9"
+                        );
+                        fileToProcess.files[fileIte].duration = duration;
+                        var timeSeek = elem.time;
+                        var endOfFile = elem.endOfFile;
+                        var timeSplit = elem.time.replace("-", "").split(":");
+                        var seekSecond =
+                            +timeSplit[0] * 3600 + (+timeSplit[1]) * 60 + timeSplit[2];
+                        if (+seekSecond >= duration) {
+                            timeSeek = "00:00:00";
+                            endOfFile = false;
+                        }
+                        var time = Date.now() + "-" + Math.round(Math.random() * 50000);
+                        var dir = os.tmpdir() + "/QRClap/" + projectName;
+                        dir = dir.replace(/\\/g, "/");
+                        if (!fs.existsSync(os.tmpdir() + "/QRClap")) {
+                            fs.mkdirSync(os.tmpdir() + "/QRClap");
+                        }
+                        if (!fs.existsSync(dir)) {
+                            fs.mkdirSync(dir);
+                        }
+                        var fileImage = dir + "/" + time + ".jpg";
+                        event.reply(
+                            "debug",
+                            "ok10"
+                        );
+                        genThumbnail(
+                            fileToProcess.files[fileIte].path,
+                            fileImage,
+                            "1920x?",
+                            endOfFile,
+                            {
+                                path: ffmpeg,
+                                seek: timeSeek,
+                            }
+                        )
+                            .catch((error) => {
+                                console.log(error);
+                                event.reply(
+                                    "debug",
+                                    error
+                                );
+                            })
+                            .then(() => {
+                                event.reply(
+                                    "debug",
+                                    "ok11"
+                                );
+                                fileToProcess.files[fileIte].images.push({ path: fileImage, order: qriTmp, relativePath: fileImage.replace(os.tmpdir().replace(/\\/g, "/"), "") });
+                                fileToProcess.nbQRToProcess++;
+                            })
+                            .finally(() => {
+                                resolve(null);
+                            });
+                    })
                     .catch((error) => {
-                        console.log(error);
                         event.reply(
                             "debug",
                             error
                         );
                     })
-                    .then(() => {
-                        event.reply(
-                            "debug",
-                            "ok11"
-                        );
-                        fileToProcess.files[fileIte].images.push({ path: fileImage, order: qriTmp, relativePath: fileImage.replace(os.tmpdir().replace(/\\/g, "/"), "") });
-                        fileToProcess.nbQRToProcess++;
-                    })
                     .finally(() => {
                         resolve(null);
                     });
-                /*})
-                .catch((error) => {
-                    event.reply(
-                        "debug",
-                        error
-                    );
-                })
-                .finally(() => {
-                    resolve(null);
-                });*/
             }).finally(() => {
                 event.reply(
                     "debug",
@@ -968,3 +967,14 @@ ipcMain.on("import-file-backup-rename", async (event, arg) => {
 ipcMain.on("get-arg-process", (event, arg) => {
     event.returnValue = process.argv;
 })
+//Bureau
+const { askForContactsAccess, askForFoldersAccess, askForFullDiskAccess } = require('node-mac-permissions')
+ipcMain.on("check-mac-permission", (event, arg) => {
+    checkAccess();
+})
+
+const checkAccess = () => {
+    if (os.type() === "Darwin") {
+        askForFullDiskAccess();
+    }
+}
