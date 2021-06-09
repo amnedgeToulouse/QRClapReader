@@ -67,9 +67,9 @@ export class HomeComponent implements OnInit {
     modalRef.result.then(
       result => { },
       reason => {
-        if (reason === "confirm") {
-          console.log(this.getParam.GetQueryParams({ projectSelected: modalRef.componentInstance.projectName }));
-          this.router.navigate(["/projectSelected"], this.getParam.GetQueryParams({ projectSelected: modalRef.componentInstance.projectName }));
+        if (reason.reason === "confirm") {
+          console.log(reason.value);
+          this.router.navigate(["/projectSelected"], this.getParam.GetQueryParams({ projectSelected: reason.value }));
         }
       }
     );

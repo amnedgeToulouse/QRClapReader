@@ -28,15 +28,36 @@ export class ModalComponent implements OnInit {
   }
 
   confirm() {
-    this.activeModal.dismiss('confirm');
+    if (this.isCreateProject) {
+      this.activeModal.dismiss({
+        reason: 'confirm',
+        value: this.projectName
+      });
+    } else {
+      this.activeModal.dismiss('confirm');
+    }
   }
 
   cancel() {
-    this.activeModal.dismiss('cancel');
+    if (this.isCreateProject) {
+      this.activeModal.dismiss({
+        reason: 'cancel',
+        value: this.projectName
+      });
+    } else {
+      this.activeModal.dismiss('cancel');
+    }
   }
 
   close() {
-    this.activeModal.dismiss('close');
+    if (this.isCreateProject) {
+      this.activeModal.dismiss({
+        reason: 'close',
+        value: this.projectName
+      });
+    } else {
+      this.activeModal.dismiss('close');
+    }
   }
 
   classButtonAction() {
