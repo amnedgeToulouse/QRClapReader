@@ -58,7 +58,6 @@ export class BackupRenameComponent implements OnInit, OnDestroy {
     this.renderer = this.electronServiceInstance.ipcRenderer;
     ref.detach();
     this.interval = setInterval(() => {
-      this.calculMissingFiles();
       this.ref.detectChanges();
     }, 100);
     this.renderer = this.electronServiceInstance.ipcRenderer;
@@ -175,6 +174,7 @@ export class BackupRenameComponent implements OnInit, OnDestroy {
 
   renameBackup() {
     if (!this.checkCanStart()) return;
+    this.calculMissingFiles();
     var fileAreMissing = false;
     for (const destination of this.destinations) {
       if (destination.missingFiles != 0) {
@@ -242,6 +242,7 @@ export class BackupRenameComponent implements OnInit, OnDestroy {
   }
 
   checkCanStart() {
+    this.calculMissingFiles();
     var oneDestinationEmpty = false;
     for (const destination of this.destinations) {
       if (destination.destination == "") {
@@ -306,6 +307,7 @@ export class BackupRenameComponent implements OnInit, OnDestroy {
         return;
       }
       this.destinations[i].destination = newFolder;
+      this.calculMissingFiles();
     });
   }
 

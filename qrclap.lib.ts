@@ -975,6 +975,6 @@ ipcMain.on("check-mac-permission", (event, arg) => {
 
 const checkAccess = () => {
     if (os.type() === "Darwin") {
-        askForFullDiskAccess();
+        //askForFullDiskAccess();
     }
 }
