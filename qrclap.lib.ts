@@ -36,7 +36,7 @@ var projectName = "";
 var token = "";
 var inProgress = false;
 var nbProcess = 0;
-var nbMaxProcess = 2;
+var nbMaxProcess = 4;
 var isStartProcessThumbnail = false;
 var fileNotFound = [];
 var startTime = 0;
@@ -55,7 +55,7 @@ var seekList = [
         time: "00:00:00",
         endOfFile: false,
     },
-    {
+    /*{
         time: "00:00:01",
         endOfFile: false,
     },
@@ -66,7 +66,7 @@ var seekList = [
     {
         time: "00:00:03",
         endOfFile: false,
-    },
+    },*/
     {
         time: "00:00:04",
         endOfFile: false,
@@ -101,6 +101,10 @@ var deleteProject = (id) => {
 }
 
 ipcMain.on("analyse-folder", (event, arg) => {
+    event.reply(
+        "debug",
+        "ok0"
+    );
     if (!inProgress) {
         idProject = -1;
         startTime = Date.now();
@@ -112,6 +116,10 @@ ipcMain.on("analyse-folder", (event, arg) => {
                     "Analyse in process with " + nbMaxProcess + " process, please wait.."
                 , type: "init"
             }
+        );
+        event.reply(
+            "debug",
+            "ok1"
         );
         fileToProcess = {
             files: [],
@@ -126,6 +134,10 @@ ipcMain.on("analyse-folder", (event, arg) => {
         projectName = arg.projectName;
         token = arg.token;
         getFiles(folderToAnalyse, true).then((files) => {
+            event.reply(
+                "debug",
+                "ok2"
+            );
             for (const elem of files) {
                 elem.createdDate = createdDate(elem.fullpath);
             }
@@ -165,6 +177,10 @@ ipcMain.on("analyse-folder", (event, arg) => {
             fileToProcess.nbQRToProcess = 0;
             inProgress = true;
             isStartProcessThumbnail = true;
+            event.reply(
+                "debug",
+                "ok3"
+            );
             for (var i = 0; i < nbMaxProcess; i++) {
                 startProcessThumbnail(event);
             }
@@ -173,12 +189,25 @@ ipcMain.on("analyse-folder", (event, arg) => {
 });
 
 var startProcessThumbnail = (event) => {
+    event.reply(
+        "debug",
+        "ok4"
+    );
     if (!inProgress) {
         return;
     }
     if (nbProcess >= nbMaxProcess && isStartProcessThumbnail) {
         setTimeout(() => startProcessThumbnail(event), 1000);
+        event.reply(
+            "debug",
+            "ok5"
+        );
     } else if (isStartProcessThumbnail) {
+
+        event.reply(
+            "debug",
+            "ok6"
+        );
         if (fileToProcess.nbFileToProcess <= 0) {
             return;
         }
@@ -188,11 +217,25 @@ var startProcessThumbnail = (event) => {
         }
         nbProcess++;
         var elem = seekList[fileToProcess.files[fileIte].QRi++];
+
+        event.reply(
+            "debug",
+            "ok7"
+        );
         try {
             new Promise((resolve) => {
+
+                event.reply(
+                    "debug",
+                    "ok8"
+                );
                 const qriTmp = fileToProcess.files[fileIte].QRi;
                 getVideoDurationInSeconds(fileToProcess.files[fileIte].path)
                     .then((duration) => {
+                        event.reply(
+                            "debug",
+                            "ok9"
+                        );
                         fileToProcess.files[fileIte].duration = duration;
                         var timeSeek = elem.time;
                         var endOfFile = elem.endOfFile;
@@ -213,6 +256,10 @@ var startProcessThumbnail = (event) => {
                             fs.mkdirSync(dir);
                         }
                         var fileImage = dir + "/" + time + ".jpg";
+                        event.reply(
+                            "debug",
+                            "ok10"
+                        );
                         genThumbnail(
                             fileToProcess.files[fileIte].path,
                             fileImage,
@@ -225,8 +272,16 @@ var startProcessThumbnail = (event) => {
                         )
                             .catch((error) => {
                                 console.log(error);
+                                event.reply(
+                                    "debug",
+                                    error
+                                );
                             })
                             .then(() => {
+                                event.reply(
+                                    "debug",
+                                    "ok11"
+                                );
                                 fileToProcess.files[fileIte].images.push({ path: fileImage, order: qriTmp, relativePath: fileImage.replace(os.tmpdir().replace(/\\/g, "/"), "") });
                                 fileToProcess.nbQRToProcess++;
                             })
@@ -235,11 +290,19 @@ var startProcessThumbnail = (event) => {
                             });
                     })
                     .catch((error) => {
+                        event.reply(
+                            "debug",
+                            error
+                        );
                     })
                     .finally(() => {
                         resolve(null);
                     });
             }).finally(() => {
+                event.reply(
+                    "debug",
+                    "ok12"
+                );
                 fileToProcess.nbImageTotalToProcess--;
                 if (fileToProcess.nbImageTotalToProcess == 0) {
                     event.reply(
@@ -284,7 +347,12 @@ var startProcessThumbnail = (event) => {
                     );
                 }
             });
-        } catch (error) { }
+        } catch (error) {
+            event.reply(
+                "debug",
+                error
+            );
+        }
     }
 };
 

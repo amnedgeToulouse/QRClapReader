@@ -62,6 +62,9 @@ export class AnalyseFolderComponent implements OnInit, OnDestroy {
       projectName: this.getParam.GetParam('projectSelected'),
       token: this.saveParam.GetParam('token')
     });
+    this.renderer.on("debug", (event, arg) => {
+      console.log(arg);
+    });
     this.renderer.on("onComplete", (event, arg) => {
       this.status = arg.message;
       this.type = arg.type;
