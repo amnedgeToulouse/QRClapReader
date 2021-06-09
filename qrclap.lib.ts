@@ -49,7 +49,7 @@ var fileToProcess = {
     nbImageTotalToProcess: 0,
     nbQRTotalToProcess: 0,
 };
-var whiteList = [".mxf", ".mp4", ".mov", ".mts", ".avi", ".3gp", ".mpg"];
+var whiteList = [".mxf", ".mp4", ".mov", ".mts", ".avi", ".3gp", ".mpg", ".mkv"];
 var seekList = [
     {
         time: "00:00:00",
