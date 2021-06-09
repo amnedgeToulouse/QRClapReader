@@ -230,7 +230,7 @@ var startProcessThumbnail = (event) => {
                     "ok8"
                 );
                 const qriTmp = fileToProcess.files[fileIte].QRi;
-                getVideoDurationInSeconds('"' + fileToProcess.files[fileIte].path + '"')
+                getVideoDurationInSeconds(fileToProcess.files[fileIte].path)
                     .then((duration) => {
                         event.reply(
                             "debug",
