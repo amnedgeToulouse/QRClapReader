@@ -274,7 +274,7 @@ export class BackupRenameComponent implements OnInit, OnDestroy {
 
   selectFolder(i = -1) {
     this.remote.require('electron').dialog.showOpenDialog({
-      properties: ['openDirectory']
+      properties: ['openDirectory', 'createDirectory']
     }).then((result) => {
       if (result.canceled) {
         return;

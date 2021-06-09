@@ -215,7 +215,7 @@ export class DoBackupComponent implements OnInit, OnDestroy {
 
   selectFolder(isSource, i = -1) {
     this.remote.require('electron').dialog.showOpenDialog({
-      properties: ['openDirectory']
+      properties: ['openDirectory', 'createDirectory']
     }).then((result) => {
       if (result.canceled) {
         return;

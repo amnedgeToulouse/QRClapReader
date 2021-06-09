@@ -125,7 +125,7 @@ export class ProjectSelectedComponent implements OnInit {
       }
     }
     this.remote.require('electron').dialog.showOpenDialog({
-      properties: ['openDirectory']
+      properties: ['openDirectory', 'createDirectory']
     }).then((result) => {
       if (result.canceled || !this.validateFolder(result.filePaths[0])) {
         return;
