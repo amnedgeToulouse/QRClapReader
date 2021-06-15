@@ -181,8 +181,15 @@ ipcMain.on("analyse-folder", (event, arg) => {
                 "debug",
                 "ok3"
             );
-            for (var i = 0; i < nbMaxProcess; i++) {
-                startProcessThumbnail(event);
+            if (fileToProcess.files.length == 0) {
+                event.reply(
+                    "endProcess",
+                    "No file found"
+                );
+            } else {
+                for (var i = 0; i < nbMaxProcess; i++) {
+                    startProcessThumbnail(event);
+                }
             }
         });
     }
@@ -588,6 +595,7 @@ ipcMain.on("http-request", (event, arg) => {
 });
 
 var httpRequest = (arg, event = null) => {
+    process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
     return new Promise((resolve, error) => {
         const headers = {
             'Content-Type': 'application/json'
@@ -887,7 +895,7 @@ ipcMain.on("backup-folder", async (event, arg) => {
     });
 });
 
-var getRelativePathFolder = async (path, parent) => {
+var getRelativePathFolder = (path, parent) => {
     return path.replace(parent, "");
 }
 
@@ -970,14 +978,3 @@ ipcMain.on("import-file-backup-rename", async (event, arg) => {
 ipcMain.on("get-arg-process", (event, arg) => {
     event.returnValue = process.argv;
 })
-//Bureau
-const { askForContactsAccess, askForFoldersAccess, askForFullDiskAccess } = require('node-mac-permissions')
-ipcMain.on("check-mac-permission", (event, arg) => {
-    checkAccess();
-})
-
-const checkAccess = () => {
-    if (os.type() === "Darwin") {
-        //askForFullDiskAccess();
-    }
-}

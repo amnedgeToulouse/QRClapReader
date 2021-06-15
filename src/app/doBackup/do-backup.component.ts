@@ -19,8 +19,8 @@ export class DoBackupComponent implements OnInit, OnDestroy {
 
   public renderer: IpcRenderer;
   public remote: Remote;
-  public sourceFolder: string = "";
-  public destinations: string[] = [""];
+  public sourceFolder: string = "F:\\Dropbox\\CameraQRCode\\LecteurElectron\\Test Copy 3 - Copie";
+  public destinations: string[] = ["F:\\Dropbox\\CameraQRCode\\LecteurElectron\\Test Copy 1"];
 
   loading = false;
   faFolderMinus = faFolderMinus;
@@ -270,6 +270,7 @@ export class DoBackupComponent implements OnInit, OnDestroy {
       this.compareStatus = "Compare completed!";
       if (typeof this.lastCompare['md5Source'] == "undefined") {
         this.lastCompare = arg;
+        console.log(arg);
       } else {
         for (const destinationFoler in arg['md5Destination']) {
           for (const destinationMd5 in arg['md5Destination'][destinationFoler]) {
@@ -285,6 +286,7 @@ export class DoBackupComponent implements OnInit, OnDestroy {
           destinations: this.destinations,
           diskError: {}
         };
+        console.log(this.lastCompare);
         for (const destinationFolder in this.lastCompare['md5Destination']) {
           fileState.diskError[destinationFolder] = [];
         }

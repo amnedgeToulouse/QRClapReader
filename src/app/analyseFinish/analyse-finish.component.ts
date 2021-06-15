@@ -127,10 +127,12 @@ export class AnalyseFinishComponent implements OnInit, OnDestroy {
     modalRef.componentInstance.project = this.project;
     modalRef.componentInstance.imageToPrint = imageToPrint;
     modalRef.result.then(
-      result => {
-        this.updateFile();
-      },
-      reason => { }
+      result => { },
+      reason => {
+        if (reason == "confirm") {
+          this.saveFileStatus();
+        }
+      }
     );
   }
 
@@ -221,7 +223,9 @@ export class AnalyseFinishComponent implements OnInit, OnDestroy {
       modalRef.result.then(
         result => { },
         reason => {
-          this.saveFileStatus();
+          if (reason == "confirm") {
+            this.saveFileStatus();
+          }
         }
       );
     }

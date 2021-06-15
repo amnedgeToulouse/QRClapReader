@@ -62,6 +62,9 @@ export class AnalyseFolderComponent implements OnInit, OnDestroy {
       projectName: this.getParam.GetParam('projectSelected'),
       token: this.saveParam.GetParam('token')
     });
+    this.renderer.removeAllListeners('debug');
+    this.renderer.removeAllListeners('onComplete');
+    this.renderer.removeAllListeners('endProcess');
     this.renderer.on("debug", (event, arg) => {
       console.log(arg);
     });
@@ -71,6 +74,20 @@ export class AnalyseFolderComponent implements OnInit, OnDestroy {
       if (this.type == "finish") {
         this.idProject = arg.idProject;
       }
+    });
+    this.renderer.on("endProcess", (event, arg) => {
+      const modalRef = this.modalService.open(ModalComponent, { backdrop: 'static' });
+      modalRef.componentInstance.title = "Cancel Analyse";
+      modalRef.componentInstance.message = "No file analysable found in this folder.";
+      modalRef.componentInstance.canConfirm = false;
+      modalRef.componentInstance.actionCancelButtonMessage = "Cancel Analyse";
+      modalRef.result.then(
+        result => { },
+        reason => {
+          this.renderer.send('cancel-analyse-folder');
+          this.router.navigate(['/projectSelected'], this.getParam.GetQueryParams());
+        }
+      );
     });
   }
 

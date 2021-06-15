@@ -1,10 +1,12 @@
 import { Component, OnInit } from '@angular/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { IpcRenderer } from 'electron';
 import { ElectronService } from 'ngx-electron';
 import { GetParamService } from '../../service/get-param.service';
 import { HttpRequestService } from '../../service/http-request.service';
+import { ModalSuggestionComponent } from '../modal-suggestion/modal-suggestion.component';
 import { ModalComponent } from '../modal/modal.component';
 
 @Component({
@@ -29,6 +31,7 @@ export class NavBarComponent implements OnInit {
     private modalService: NgbModal,
     private getParam: GetParamService,
     electronServiceInstance: ElectronService,
+    readonly snackBar: MatSnackBar,
     private httpRequest: HttpRequestService) {
     this.renderer = electronServiceInstance.ipcRenderer;
   }
@@ -95,6 +98,21 @@ export class NavBarComponent implements OnInit {
       }
     }
     return false;
+  }
+
+  suggestion() {
+    const modalRef = this.modalService.open(ModalSuggestionComponent, { size: 'lg', backdrop: 'static' });
+    modalRef.result.then(
+      result => { },
+      reason => {
+        if (reason == "confirm") {
+          this.snackBar.open('Suggestion sent!', '', {
+            duration: 5000,
+            verticalPosition: 'top'
+          });
+        }
+      }
+    );
   }
 
   leaveProject() {
