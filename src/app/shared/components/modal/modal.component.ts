@@ -13,11 +13,15 @@ export class ModalComponent implements OnInit {
   message = ""
   actionButtonMessage = "Create";
   actionCancelButtonMessage = "Cancel";
+  actionSecondButtonMessage = "Cancel";
   actionButtonType = 0;
   cancelButtonType = 0;
+  secondButtonType = 0;
   canConfirm = true;
+  canSecondAction = false;
   imageToPrint = "";
   zoom = false;
+  removeClose = false;
 
   isCreateProject = false;
 
@@ -25,6 +29,17 @@ export class ModalComponent implements OnInit {
 
   ngOnInit() {
 
+  }
+
+  secondConfirm() {
+    if (this.isCreateProject) {
+      this.activeModal.dismiss({
+        reason: 'secondConfirm',
+        value: this.projectName
+      });
+    } else {
+      this.activeModal.dismiss('secondConfirm');
+    }
   }
 
   confirm() {
@@ -75,6 +90,18 @@ export class ModalComponent implements OnInit {
       return "btn btn-success";
     } else if (this.cancelButtonType == 2) {
       return "btn btn-warning";
+    } else if (this.cancelButtonType == 3) {
+      return "btn btn-danger";
+    }
+  }
+
+  classSecondButtonAction() {
+    if (this.secondButtonType == 0) {
+      return "btn btn-success";
+    } else if (this.secondButtonType == 1) {
+      return "btn btn-warning";
+    } else if (this.secondButtonType == 2) {
+      return "btn btn-danger";
     }
   }
 

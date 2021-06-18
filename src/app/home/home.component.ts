@@ -25,6 +25,8 @@ export class HomeComponent implements OnInit {
 
   projectsFiltered = [];
 
+  projectsArchivedFiltered = [];
+
   faSearch = faSearch;
 
   projectLoaded = false;
@@ -40,6 +42,7 @@ export class HomeComponent implements OnInit {
   }
 
   updateProject() {
+    this.loading = true;
     this.httpRequest.SendRequest({
       host: Constant.HOST_API,
       port: Constant.PORT_API,
@@ -80,11 +83,27 @@ export class HomeComponent implements OnInit {
   }
 
   getStateProject(p: Project) {
-    return p.state == 0 ? "Analysing" : "Renamed";
+    switch (p.state) {
+      case 0:
+        return "Analysing"
+      case 1:
+        return "Renamed"
+      case 2:
+        return "Archived"
+    }
+    return "Unknow state";
   }
 
   getClassStateProject(p: Project) {
-    return p.state == 0 ? "yellow-text" : "green-text";
+    switch (p.state) {
+      case 0:
+        return "yellow-text"
+      case 1:
+        return "green-text"
+      case 2:
+        return "success-text"
+    }
+    return "red-text";
   }
 
   formatDate(d) {
@@ -96,10 +115,12 @@ export class HomeComponent implements OnInit {
 
   updateFilter() {
     if (this.searchValue === "") {
-      this.projectsFiltered = this.projects;
+      this.projectsFiltered = this.projects.filter(project => project.state != 2);
+      this.projectsArchivedFiltered = this.projects.filter(project => project.state == 2);
       return;
     }
     this.projectsFiltered = [];
+    this.projectsArchivedFiltered = [];
     for (const elem of this.projects) {
       if (elem.name.toLowerCase().includes(this.searchValue.toLowerCase()) ||
         (elem.total + "").toLowerCase().includes(this.searchValue.toLowerCase()) ||
@@ -109,13 +130,95 @@ export class HomeComponent implements OnInit {
         (elem.divers + "").toLowerCase().includes(this.searchValue.toLowerCase()) ||
         this.getStateProject(elem).toLowerCase().includes(this.searchValue.toLowerCase()) ||
         this.formatDate(elem.date).toLowerCase().includes(this.searchValue.toLowerCase())) {
-        this.projectsFiltered.push(elem);
+        if (elem.state == 2) {
+          this.projectsArchivedFiltered.push(elem);
+        } else {
+          this.projectsFiltered.push(elem);
+        }
       }
     }
   }
 
   openProject(project: Project) {
-    this.router.navigate(["/projectSelected"], this.getParam.GetQueryParams({ projectSelected: project.name, idProject: project.id, projectState: project.state }));
+    const modalRef = this.modalService.open(ModalComponent);
+    modalRef.componentInstance.title = "Project action";
+    if (project.state == 1) {
+      modalRef.componentInstance.message = 'You can open or archive the project "' + project.name + '"';
+    } else if (project.state == 0) {
+      modalRef.componentInstance.message = 'You can open or delete the project "' + project.name + '"';
+    } else if (project.state == 2) {
+      modalRef.componentInstance.message = 'You can restore the project "' + project.name + '"';
+    }
+    modalRef.componentInstance.actionButtonMessage = "Open project"
+    modalRef.componentInstance.actionButtonType = 0;
+    if (project.state == 1) {
+      modalRef.componentInstance.actionCancelButtonMessage = "Archive";
+      modalRef.componentInstance.cancelButtonType = 2;
+    } else if (project.state == 0) {
+      modalRef.componentInstance.actionCancelButtonMessage = "Delete";
+      modalRef.componentInstance.cancelButtonType = 3;
+    } else if (project.state == 2) {
+      modalRef.componentInstance.actionButtonMessage = "Restore project"
+      modalRef.componentInstance.actionCancelButtonMessage = "Cancel";
+      modalRef.componentInstance.cancelButtonType = 0;
+    }
+    modalRef.result.then(
+      result => { },
+      reason => {
+        if (reason === "confirm") {
+          if (project.state == 2) {
+            this.loading = true;
+            this.httpRequest.SendRequest({
+              host: Constant.HOST_API,
+              port: Constant.PORT_API,
+              data: {
+                id: project.id,
+                state: 1
+              },
+              method: "POST",
+              path: "/qrclap/updatestateproject",
+              token: this.saveParam.GetParam('token'),
+              processOtherError: true
+            }).then(() => {
+              this.updateProject();
+            });
+          } else {
+            this.router.navigate(["/projectSelected"], this.getParam.GetQueryParams({ projectSelected: project.name, idProject: project.id, projectState: project.state }));
+          }
+        } else if (reason === "cancel") {
+          if (project.state == 1) {
+            this.loading = true;
+            this.httpRequest.SendRequest({
+              host: Constant.HOST_API,
+              port: Constant.PORT_API,
+              data: {
+                id: project.id,
+                state: 2
+              },
+              method: "POST",
+              path: "/qrclap/updatestateproject",
+              token: this.saveParam.GetParam('token'),
+              processOtherError: true
+            }).then(() => {
+              this.updateProject();
+            });
+          } else if (project.state == 0) {
+            this.loading = true;
+            this.httpRequest.SendRequest({
+              host: Constant.HOST_API,
+              port: Constant.PORT_API,
+              data: null,
+              method: "DELETE",
+              path: "/qrclap/removeproject/" + project.id,
+              token: this.saveParam.GetParam('token'),
+              processOtherError: true
+            }).then(() => {
+              this.updateProject();
+            });
+          }
+        }
+      }
+    );
   }
 
 }

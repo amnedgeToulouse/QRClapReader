@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { IpcRenderer } from 'electron';
 import { ElectronService } from 'ngx-electron';
+import { Constant } from '../../../constant';
 import { GetParamService } from '../../service/get-param.service';
 import { HttpRequestService } from '../../service/http-request.service';
 import { ModalSuggestionComponent } from '../modal-suggestion/modal-suggestion.component';
@@ -64,6 +65,10 @@ export class NavBarComponent implements OnInit {
     setTimeout(() => {
       this.renderer.send('restart_app');
     }, 1000);
+  }
+
+  getLogo() {
+    return Constant.LOGO;
   }
 
   isValidRoute() {

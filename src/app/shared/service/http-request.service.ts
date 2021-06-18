@@ -47,34 +47,51 @@ export class HttpRequestService {
 
     ProcessError(errorRequest, httpRequestParams, error) {
         if ((errorRequest + "").includes("ECONNREFUSED")) {
-            const modalRef = this.modalService.open(ModalComponent);
+            const modalRef = this.modalService.open(ModalComponent, { backdrop: 'static' });
             modalRef.componentInstance.title = "Server down..";
             modalRef.componentInstance.message = "Server is down please retry later";
-            modalRef.componentInstance.canConfirm = false;
+            modalRef.componentInstance.actionButtonMessage = "Retry"
             modalRef.componentInstance.actionButtonType = 0;
-            modalRef.componentInstance.actionCancelButtonMessage = "Retry";
-            modalRef.componentInstance.cancelButtonType = 2;
+            modalRef.componentInstance.actionCancelButtonMessage = "Disconnect";
+            modalRef.componentInstance.cancelButtonType = 3;
+            modalRef.componentInstance.removeClose = true;
             modalRef.result.then(
                 result => { },
                 reason => {
-                    this.renderer.send("http-request", httpRequestParams);
-                    this.renderer.once(httpRequestParams['errorIdRequest'], (event, arg) => {
-                        this.ProcessError(errorRequest, httpRequestParams, error);
-                    });
+                    if (reason == "confirm") {
+                        this.renderer.send("http-request", httpRequestParams);
+                        this.renderer.once(httpRequestParams['errorIdRequest'], (event, arg) => {
+                            this.ProcessError(errorRequest, httpRequestParams, error);
+                        });
+                    } else if (reason == "cancel") {
+                        this.Logout();
+                    }
                 }
             );
         } else if (httpRequestParams.processOtherError) {
-            const modalRef = this.modalService.open(ModalComponent);
+            const modalRef = this.modalService.open(ModalComponent, { backdrop: 'static' });
             modalRef.componentInstance.title = "Unexpected error " + errorRequest;
             modalRef.componentInstance.message = "If this error persist please contact support";
             modalRef.componentInstance.actionButtonMessage = "Contact support (FR/EN)";
             modalRef.componentInstance.actionButtonType = 0;
-            modalRef.componentInstance.actionCancelButtonMessage = "Cancel";
+            modalRef.componentInstance.actionSecondButtonMessage = "Retry";
+            modalRef.componentInstance.secondButtonType = 1;
+            modalRef.componentInstance.canSecondAction = true;
+            modalRef.componentInstance.actionCancelButtonMessage = "Disconnect";
+            modalRef.componentInstance.cancelButtonType = 3;
+            modalRef.componentInstance.removeClose = true;
             modalRef.result.then(
                 result => { },
                 reason => {
                     if (reason == "confirm") {
                         //TODO: Contact support
+                    } else if (reason == "secondConfirm") {
+                        this.renderer.send("http-request", httpRequestParams);
+                        this.renderer.once(httpRequestParams['errorIdRequest'], (event, arg) => {
+                            this.ProcessError(errorRequest, httpRequestParams, error);
+                        });
+                    } else if (reason == "cancel") {
+                        this.Logout();
                     }
                 }
             );

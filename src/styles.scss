@@ -73,12 +73,29 @@ body {
   }
 }
 
+.mat-ink-bar {
+  background-color: #f1c50e !important;
+}
+
+.mat-tab-header {
+  background: #404040;
+}
+
+.mat-tab-label {
+  color: white;
+  opacity: 1 !important;
+}
+
 .yellow-text {
   color: #f1c50e;
 }
 
 .red-text {
   color: #e74c3c;
+}
+
+.white-text {
+  color: white;
 }
 
 .green-text {
