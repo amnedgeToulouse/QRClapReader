@@ -221,7 +221,7 @@ export class DoBackupComponent implements OnInit, OnDestroy {
         return;
       }
       const newFolder = result.filePaths[0];
-      var exist = this.sourceFolder != "" && (this.sourceFolder.includes(newFolder) || newFolder.includes(this.sourceFolder));
+      var exist = this.sourceFolder != "" && (this.sourceFolder.includes(newFolder) || newFolder.includes(this.sourceFolder)) && !isSource;
       if (!exist) {
         for (var u = 0; u < this.destinations.length; u++) {
           const destination = this.destinations[u];

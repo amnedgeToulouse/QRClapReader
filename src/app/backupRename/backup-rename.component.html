@@ -6,7 +6,7 @@
             <div class="flex-row align-items-center d-flex w-100">
                 <div class="white-indication-title p-2 flex-fill"><span class="yellow-text">S</span>ource {{getFileRenamed().length}} files renamed</div>
             </div>
-            <div class="flex-column d-flex w-100 overflow-auto user-select-none" style="max-height: 450px;">
+            <div class="flex-column d-flex w-100 overflow-auto user-select-none" style="max-height: 350px;">
                 <mat-card *ngFor="let file of getFileRenamed();" class="mb-1">
                     <span class="black-indication-subtitle">{{file.nameBeforeRename}}</span>
                     <span class="black-indication-subtitle ml-2 mr-2">-></span>
@@ -16,7 +16,7 @@
         </div>
         <div class="flex-column d-flex ml-2 w-50">
             <div class="white-indication-title p-2"><span class="yellow-text">D</span>estinations</div>
-            <div class="flex-column d-flex w-100 overflow-auto" style="max-height: 450px;">
+            <div class="flex-column d-flex w-100 overflow-auto" style="max-height: 350px;">
                 <div class="flex-column d-flex flex-fill p-2" *ngFor="let destination of destinations; let i=index;">
                     <div class="white-indication-subtitle p-2" style="overflow: hidden;"><fa-icon *ngIf="destination.destination!=''" [icon]="faSave" class="mr-2"></fa-icon>{{destination.destination}}</div>
                     <div class="green-indication-subtitle p-2" *ngIf="destination.destination!='' && destination.missingFiles==0 && destination.alreadyRename != destination.total">All files match with project, ready for rename!</div>
@@ -35,7 +35,7 @@
                 </div>
             </div>
             <div class="flex-fill p-2">
-                <button type="button" class="btn btn-success" (click)="addDestination()" style="width: 47px;font-weight: bold;border-radius: 50%;font-size: 22px;"><fa-icon [icon]="faFolderPlus"></fa-icon></button>
+                <button type="button" class="btn btn-success" (click)="addDestination()" style="width: 47px;font-weight: bold;border-radius: 50%;font-size: 22px;margin-top: 14px;"><fa-icon [icon]="faFolderPlus"></fa-icon></button>
             </div>
         </div>
     </div>

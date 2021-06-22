@@ -28,10 +28,12 @@
   font-weight: 700;
   font-size: 1.125rem;
   line-height: 1.2;
+  width: 110px;
+  float: left;
 }
 
 .project-container {
   width: 1080px;
-  height: 538px;
+  min-height: 380px;
   overflow: auto;
 }

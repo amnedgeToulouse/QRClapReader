@@ -8,7 +8,7 @@
             <input (keyup)="updateFilter()" (cut)="updateFilter()" (past)="updateFilter()" type="text" class="form-control" [(ngModel)]="searchValue" placeholder="Search">
         </div>
     </div>
-    <mat-tab-group style="width:1080px">
+    <mat-tab-group style="width:1080px;">
         <mat-tab label="Active"> 
             <div class="project-container" *ngIf="projects.length>0">
                 <div *ngFor="let project of projectsFiltered" (click)="openProject(project)" class="project-card d-flex flex-row align-items-center justify-content-center cursor-pointer">
@@ -16,19 +16,19 @@
                         <h3 class="project-name">{{project.name}}</h3>
                         <span class="project-date">{{formatDate(project.date)}} - <span [class]="getClassStateProject(project)">{{getStateProject(project)}}</span></span>
                     </div>
-                    <div class="p-4 project-text-info">
+                    <div class="project-text-info">
                         Total: {{project.total}}
                     </div>
-                    <div class="p-4 project-text-info">
+                    <div class="project-text-info">
                         Scene: {{project.scene}}
                     </div>
-                    <div class="p-4 project-text-info">
+                    <div class="project-text-info">
                         Plan: {{project.plan}}
                     </div>
-                    <div class="p-4 project-text-info">
+                    <div class="project-text-info">
                         Prise: {{project.prise}}
                     </div>
-                    <div class="p-4 project-text-info">
+                    <div class="project-text-info">
                         Divers: {{project.divers}}
                     </div>
                 </div>

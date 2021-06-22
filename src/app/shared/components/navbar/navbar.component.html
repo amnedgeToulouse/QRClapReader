@@ -12,11 +12,11 @@
     <div class="p-2 flex-fill">
       <span *ngIf="getProjectName() != ''" class="black-indication-text">Project: </span><span class="yellow-indication-text">{{getProjectName()}}</span>
     </div>
-    <div class="p-2" *ngIf="isValidBackToProjectRoute()">
-      <button (click)="leaveProject()" type="button" class="btn btn-primary">{{getLeaveText()}}</button>
-    </div>
     <div class="p-2">
       <button (click)="suggestion()" type="button" class="btn btn-success">Suggestion</button>
+    </div>
+    <div class="p-2" *ngIf="isValidBackToProjectRoute()">
+      <button (click)="leaveProject()" type="button" class="btn btn-primary">{{getLeaveText()}}</button>
     </div>
     <div class="p-2" *ngIf="canDecconect()">
       <button (click)="logout()" type="button" class="btn btn-primary">Logout</button>
