@@ -203,18 +203,31 @@ export class HomeComponent implements OnInit {
               this.updateProject();
             });
           } else if (project.state == 0) {
-            this.loading = true;
-            this.httpRequest.SendRequest({
-              host: Constant.HOST_API,
-              port: Constant.PORT_API,
-              data: null,
-              method: "DELETE",
-              path: "/qrclap/removeproject/" + project.id,
-              token: this.saveParam.GetParam('token'),
-              processOtherError: true
-            }).then(() => {
-              this.updateProject();
-            });
+            const modalConfirm = this.modalService.open(ModalComponent);
+            modalConfirm.componentInstance.title = "Delete Project";
+            modalConfirm.componentInstance.message = "Are you sure to delete the project " + project.name + " ?";
+            modalConfirm.componentInstance.actionButtonMessage = "Delete project";
+            modalConfirm.componentInstance.actionButtonType = 1;
+            modalConfirm.componentInstance.actionCancelButtonMessage = "No";
+            modalConfirm.result.then(
+              result => { },
+              reason => {
+                if (reason === "confirm") {
+                  this.loading = true;
+                  this.httpRequest.SendRequest({
+                    host: Constant.HOST_API,
+                    port: Constant.PORT_API,
+                    data: null,
+                    method: "DELETE",
+                    path: "/qrclap/removeproject/" + project.id,
+                    token: this.saveParam.GetParam('token'),
+                    processOtherError: true
+                  }).then(() => {
+                    this.updateProject();
+                  });
+                }
+              }
+            );
           }
         }
       }

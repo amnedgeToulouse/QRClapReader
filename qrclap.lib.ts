@@ -21,6 +21,7 @@ const md5File = require('md5-file');
 const copydir = require('copy-dir');
 const rootPath = require('electron-root-path').rootPath;
 const cpy = require('cpy');
+const getSize = require('get-folder-size');
 
 ncp.limit = 16;
 
@@ -819,25 +820,17 @@ function getFilesizeInBytes(filename) {
     return fileSizeInBytes;
 }
 
+var cancelBackup = false;
+
+ipcMain.on("cancel-backup", async (event, arg) => {
+    cancelBackup = true;
+});
+
 ipcMain.on("backup-folder", async (event, arg) => {
+    cancelBackup = false;
     const source = arg.source;
     const destinations = arg.destinations;
     const filter = arg.filter;
-    // const statToSend = {
-    //     current: 0,
-    //     total: 0,
-    //     filename: ""
-    // }
-    // const filterFunc = (src, dest) => {
-    //     if (fs.lstatSync(src).isFile()) {
-    //         statToSend.current++;
-    //         statToSend.filename = src.replaceAll("\\", "/").replace(source.replaceAll("\\", "/"), "");
-    //         event.reply("backup-folder-status", statToSend);
-    //         return typeof filter == "undefined" || filter.length == 0 || filter.includes(dest.replaceAll("\\", "/"));
-    //     } else {
-    //         return true;
-    //     }
-    // }
     getFiles(source, false).then(async (sourceFiles) => {
         var totalSize = 0;
         var totalDone = 0;
@@ -871,6 +864,10 @@ ipcMain.on("backup-folder", async (event, arg) => {
                         totalFolder += getFilesizeInBytes(file);
                     }
                     for (const fileToProcess of fileList) {
+                        if (cancelBackup) {
+                            event.reply("backup-cancel", null);
+                            return;
+                        }
                         const relative = fileToProcess.replaceAll("\\", "/").replace(source.replaceAll("\\", "/"), "");
                         const file = relative.split("/");
                         const destinationFolder = destination.replaceAll("\\", "/") + relative.replace(file[file.length - 1], "").replaceAll("\\", "/");
@@ -880,11 +877,19 @@ ipcMain.on("backup-folder", async (event, arg) => {
                         await cpy([fileToProcess], destinationFolder).on('progress', progress => {
                             event.reply("backup-folder-status", { ...progress, totalSize: totalSize, folder: destination, folderActual: i + 1, folderTotal: destinations.length, totalDone: totalDone, totalFolder: totalFolder, totalFolderDone: totalFolderDone });
                         });
+                        if (cancelBackup) {
+                            event.reply("backup-cancel", null);
+                            return;
+                        }
                         totalDone += getFilesizeInBytes(fileToProcess);
                         totalFolderDone += getFilesizeInBytes(fileToProcess);
                     }
                 }
             } catch (error) {
+                if (cancelBackup) {
+                    event.reply("backup-cancel", null);
+                    return;
+                }
                 console.log(error);
                 i--;
                 await sleep(1000);
@@ -977,4 +982,11 @@ ipcMain.on("import-file-backup-rename", async (event, arg) => {
 
 ipcMain.on("get-arg-process", (event, arg) => {
     event.returnValue = process.argv;
+})
+
+ipcMain.on("get-folder-size", async (event, arg) => {
+    getSize(arg, (err, size) => {
+        if (err) { throw err; }
+        event.returnValue = size;
+    });
 })

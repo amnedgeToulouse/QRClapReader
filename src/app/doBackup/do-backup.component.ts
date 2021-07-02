@@ -21,6 +21,8 @@ export class DoBackupComponent implements OnInit, OnDestroy {
   public remote: Remote;
   public sourceFolder: string = "";
   public destinations: string[] = [""];
+  public sourceFolderSize = 0;
+  public backupCancel = false;
 
   loading = false;
   faFolderMinus = faFolderMinus;
@@ -139,6 +141,7 @@ export class DoBackupComponent implements OnInit, OnDestroy {
 
   startBackup(filter = []) {
     if (!this.checkCanStart()) return;
+    this.backupCancel = false;
     this.progress = {};
     this.loading = true;
     this.backupSpeed = 0;
@@ -205,6 +208,26 @@ export class DoBackupComponent implements OnInit, OnDestroy {
         );
       }
     });
+    this.renderer.once("backup-cancel", (event, arg) => {
+      this.backupCancel = false;
+      if (this.speedInterval != null) {
+        clearInterval(this.speedInterval);
+        this.speedInterval = null;
+      }
+      this.loading = false;
+      this.compareStatus = "";
+      this.progress = {};
+    });
+  }
+
+  getFolderSourceSize() {
+    var size = (this.sourceFolderSize / 1024 / 1024 / 1024).toFixed(2);
+    if (+size < 1) {
+      size = (this.sourceFolderSize / 1024 / 1024).toFixed(2) + " Mo";
+    } else {
+      size += " Go";
+    }
+    return this.sourceFolderSize > 0 ? "(" + size + ")" : "";
   }
 
   inSameFolder(destination, newFolder) {
@@ -213,14 +236,26 @@ export class DoBackupComponent implements OnInit, OnDestroy {
     return destination.replace(splitDestination[splitDestination.length - 1]) == newFolder.replace(splitNewFolder[splitNewFolder.length - 1]);
   }
 
+  cancelBackup() {
+    this.renderer.send("cancel-backup", {});
+    this.backupCancel = true;
+  }
+
   selectFolder(isSource, i = -1) {
     this.remote.require('electron').dialog.showOpenDialog({
       properties: ['openDirectory', 'createDirectory']
     }).then((result) => {
+      if (isSource) {
+        this.sourceFolderSize = 0;
+      }
       if (result.canceled) {
         return;
       }
+      console.log(result);
       const newFolder = result.filePaths[0];
+      if (isSource) {
+        this.sourceFolderSize = this.renderer.sendSync("get-folder-size", newFolder);
+      }
       var exist = this.sourceFolder != "" && (this.sourceFolder.includes(newFolder) || newFolder.includes(this.sourceFolder)) && !isSource;
       if (!exist) {
         for (var u = 0; u < this.destinations.length; u++) {
@@ -232,6 +267,9 @@ export class DoBackupComponent implements OnInit, OnDestroy {
         }
       }
       if (exist) {
+        if (isSource) {
+          this.sourceFolderSize = 0;
+        }
         const modalRef = this.modalService.open(ModalComponent);
         modalRef.componentInstance.title = "Warning";
         modalRef.componentInstance.message = "You cannot choose same or include folder in source or destinations";
@@ -256,6 +294,7 @@ export class DoBackupComponent implements OnInit, OnDestroy {
   compareFolder(filter = [], autostart = false) {
     if (!this.checkCanStart()) return;
     if (filter.length == 0) this.lastCompare = {};
+    this.backupCancel = false;
     this.renderer.removeAllListeners("compare-folder-status");
     this.loading = true;
     this.renderer.send("compare-folder", {

@@ -235,7 +235,8 @@ export class BackupRenameComponent implements OnInit, OnDestroy {
           setTimeout(() => {
             this.compareStatus = "";
             this.loading = false;
-          }, 1000);
+            this.calculMissingFiles();
+          }, 4000);
         }
       }
     );

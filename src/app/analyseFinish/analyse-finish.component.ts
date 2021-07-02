@@ -13,10 +13,27 @@ import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SaveParamService } from '../shared/service/save-param';
 import { Utils } from '../shared/service/utils';
+import { animate, state, style, transition, trigger } from '@angular/animations';
 
 @Component({
   selector: 'app-analyse-finish',
   templateUrl: './analyse-finish.component.html',
+  animations: [
+    trigger('openClose', [
+      state('open', style({
+        opacity: 0.2,
+      })),
+      state('closed', style({
+        opacity: 1,
+      })),
+      transition('open => closed', [
+        animate('1s')
+      ]),
+      transition('closed => open', [
+        animate('0.2s')
+      ]),
+    ]),
+  ],
   styleUrls: ['./analyse-finish.component.scss']
 })
 export class AnalyseFinishComponent implements OnInit, OnDestroy {
@@ -45,6 +62,7 @@ export class AnalyseFinishComponent implements OnInit, OnDestroy {
     this.renderer = electronServiceInstance.ipcRenderer;
     this.interval = setInterval(() => {
       this.ref.detectChanges();
+      this.updateFile();
     }, 1000);
   }
 
@@ -69,7 +87,11 @@ export class AnalyseFinishComponent implements OnInit, OnDestroy {
 
   drop(event: CdkDragDrop<string[]>) {
     if (event.previousIndex != event.currentIndex) {
+      this.project.files[event.previousIndex].stateAnim = "open";
       moveItemInArray(this.project.files, event.previousIndex, event.currentIndex);
+      setTimeout(() => {
+        this.project.files[event.currentIndex].stateAnim = "closed";
+      }, 0.2);
       this.saveOrder();
     }
   }
@@ -113,7 +135,7 @@ export class AnalyseFinishComponent implements OnInit, OnDestroy {
       toReturn = f.nameAfterRename == null || typeof f.nameAfterRename == "undefined" ? '' : f.nameAfterRename;
     if (withoutDupli) {
       const split = toReturn.split("_");
-      if (split.length > 1 && !isNaN(+split[split.length - 1])) {
+      if (split.length > 1 && !isNaN(+split[split.length - 1]) && !toReturn.match(/[0-9][0-9][_][0-9][0-9][_][0-9][0-9]/gi)) {
         toReturn = toReturn.replace("_" + split[split.length - 1], "");
       }
     }
@@ -216,7 +238,7 @@ export class AnalyseFinishComponent implements OnInit, OnDestroy {
     if (f.type == 2) {
       this.openDirectory(f);
     } else if (this.project.state != 1) {
-      const modalRef = this.modalService.open(ModalRenameComponent);
+      const modalRef = this.modalService.open(ModalRenameComponent, { size: 'lg' });
       modalRef.componentInstance.i = i;
       modalRef.componentInstance.parent = this;
       modalRef.componentInstance.project = this.project;
@@ -329,9 +351,9 @@ export class AnalyseFinishComponent implements OnInit, OnDestroy {
       const previousName = this.getRenameName(previousFile);
       const cinemaFormat = this.isCinemaFormat(previousName);
       if (cinemaFormat != null) {
-        const cinemaSplit = this.cinemaSplit(cinemaFormat.value, cinemaFormat.i);
+        const cinemaSplit = this.cinemaSplit(previousName, cinemaFormat.i);
         cinemaSplit.prise = +cinemaSplit.prise + 1 + "";
-        cinemaSplit.suffix = this.getSuffixCinema(previousName, cinemaFormat.value);
+        //cinemaSplit.suffix = this.getSuffixCinema(previousName, cinemaFormat.value);
         file.customRename = this.getCinemaName(cinemaSplit);
       } else {
         file.customRename = this.getRenameName(previousFile, true);
@@ -364,9 +386,9 @@ export class AnalyseFinishComponent implements OnInit, OnDestroy {
     var addScene = +cinemaValue.scene <= 9 ? "0" : "";
     var addPlan = +cinemaValue.plan <= 9 ? "0" : "";
     var addPrise = +cinemaValue.prise <= 9 ? "0" : "";
-    return ("S" + addScene + cinemaValue.scene + cinemaValue.sceneSuffix +
-      "_P" + addPlan + cinemaValue.plan + cinemaValue.planSuffix +
-      "_P" + addPrise + cinemaValue.prise + cinemaValue.priseSuffix).toUpperCase() +
+    return (cinemaValue.scenePrefix + addScene + cinemaValue.scene + cinemaValue.sceneSuffix +
+      "_" + cinemaValue.planPrefix + addPlan + cinemaValue.plan + cinemaValue.planSuffix +
+      "_" + cinemaValue.prisePrefix + addPrise + cinemaValue.prise + cinemaValue.priseSuffix).toUpperCase() +
       cinemaValue.suffix;
   }
 
@@ -384,62 +406,96 @@ export class AnalyseFinishComponent implements OnInit, OnDestroy {
     return t + "." + splitT[splitT.length - 1];
   }
 
-  cinemaSplit(value: string, i: number) {
-    var regexList = [/[S]|[0-9][0-9]|[A-Z]|[_][P]|[0-9][0-9]|[A-Z]|[_][P]|[0-9][0-9]|[A-Z]/gi, //S01E_P15A_P16A
-      /[S]|[0-9][0-9]|[A-Z]|[_][P]|[0-9][0-9]|[A-Z]|[_][P]|[0-9][0-9]/gi, //S01E_P15A_P16
-      /[S]|[0-9][0-9]|[A-Z]|[_][P]|[0-9][0-9]|[_][P]|[0-9][0-9]/gi, //S01E_P15_P16
-      /[S]|[0-9][0-9]|[_][P]|[0-9][0-9]|[_][P]|[0-9][0-9]/gi, //S01_P15_P16
-      /[S]|[0-9][0-9]|[_][P]|[0-9][0-9]|[A-Z]|[_][P]|[0-9][0-9]/gi, //S01_P15A_P16
-      /[S]|[0-9][0-9]|[_][P]|[0-9][0-9]|[_][P]|[0-9][0-9]|[A-Z]/gi, //S01_P15_P16A
-      /[S]|[0-9][0-9]|[A-Z]|[_][P]|[0-9][0-9]|[_][P]|[0-9][0-9]|[A-Z]/gi, //S01A_P15_P16A
-      /[S]|[0-9][0-9]|[_][P]|[0-9][0-9]|[A-Z]|[_][P]|[0-9][0-9]|[A-Z]/gi, //S01_P15A_P16A
+  cinemaSplit(value: string, index: number) {
+    var regexList = [/[A-Z]|[0-9][0-9]|[A-Z]|[_][A-Z]|[0-9][0-9]|[A-Z]|[_][A-Z]|[0-9][0-9]|[A-Z]/gi, //S01E_P15A_P16A
+      /[A-Z]|[0-9][0-9]|[_][A-Z]|[0-9][0-9]|[_][A-Z]|[0-9][0-9]|[A-Z]/gi, //S01_P15_P16A
+      /[A-Z]|[0-9][0-9]|[A-Z]|[_][A-Z]|[0-9][0-9]|[_][A-Z]|[0-9][0-9]|[A-Z]/gi, //S01A_P15_P16A
+      /[A-Z]|[0-9][0-9]|[_][A-Z]|[0-9][0-9]|[A-Z]|[_][A-Z]|[0-9][0-9]|[A-Z]/gi, //S01_P15A_P16A
+      /[A-Z]|[0-9][0-9]|[A-Z]|[_][A-Z]|[0-9][0-9]|[A-Z]|[_][A-Z]|[0-9][0-9]/gi, //S01E_P15A_P16
+      /[A-Z]|[0-9][0-9]|[A-Z]|[_][A-Z]|[0-9][0-9]|[_][A-Z]|[0-9][0-9]/gi, //S01E_P15_P16
+      /[A-Z]|[0-9][0-9]|[_][A-Z]|[0-9][0-9]|[_][A-Z]|[0-9][0-9]/gi, //S01_P15_P16
+      /[A-Z]|[0-9][0-9]|[_][A-Z]|[0-9][0-9]|[A-Z]|[_][A-Z]|[0-9][0-9]/gi, //S01_P15A_P16
+      /[0-9][0-9]|[A-Z]|[_]|[0-9][0-9]|[A-Z]|[_]|[0-9][0-9]|[A-Z]/gi, //01E_15A_16A
+      /[0-9][0-9]|[_]|[0-9][0-9]|[_]|[0-9][0-9]|[A-Z]/gi, //01_15_16A
+      /[0-9][0-9]|[A-Z]|[_]|[0-9][0-9]|[_]|[0-9][0-9]|[A-Z]/gi, //01A_15_16A
+      /[0-9][0-9]|[_]|[0-9][0-9]|[A-Z]|[_]|[0-9][0-9]|[A-Z]/gi, //01_15A_16A
+      /[0-9][0-9]|[A-Z]|[_]|[0-9][0-9]|[A-Z]|[_]|[0-9][0-9]/gi, //01E_15A_16
+      /[0-9][0-9]|[A-Z]|[_]|[0-9][0-9]|[_]|[0-9][0-9]/gi, //01E_15_16
+      /[0-9][0-9]|[_]|[0-9][0-9]|[_]|[0-9][0-9]/gi, //01_15_16
+      /[0-9][0-9]|[_]|[0-9][0-9]|[A-Z]|[_]|[0-9][0-9]/gi, //01_15A_16
     ];
-    const splitRegex = value.match(regexList[i]);
+    const splitRegex = value.match(regexList[index]);
+    var i = 0;
+    var scenePrefix = isNaN(+splitRegex[i]) ? splitRegex[i] : "";
     const finalCinema = {
-      scene: +splitRegex[1] + "",
+      scene: (isNaN(+splitRegex[i]) ? +splitRegex[1 + i++] : +splitRegex[i]) + "",
       sceneSuffix: "",
+      scenePrefix: scenePrefix.toUpperCase(),
       plan: "",
       planSuffix: "",
+      planPrefix: "",
       prise: "",
       priseSuffix: "",
+      prisePrefix: "",
       suffix: ""
     };
-    var i = 2;
-    if (splitRegex[i].toUpperCase() != "_P") {
-      finalCinema.sceneSuffix = splitRegex[i];
+    i++;
+    if (!splitRegex[i].toUpperCase().includes("_")) {
+      finalCinema.sceneSuffix = splitRegex[i].toUpperCase();
       i++;
+    }
+    if (scenePrefix != "") {
+      finalCinema.planPrefix = splitRegex[i].split("_")[1].toUpperCase();
     }
     i++;
     finalCinema.plan = +splitRegex[i] + "";
     i++;
-    if (splitRegex[i].toUpperCase() != "_P") {
-      finalCinema.planSuffix = splitRegex[i];
+    if (!splitRegex[i].toUpperCase().includes("_")) {
+      finalCinema.planSuffix = splitRegex[i].toUpperCase();
       i++;
+    }
+    if (scenePrefix != "") {
+      finalCinema.prisePrefix = splitRegex[i].split("_")[1].toUpperCase();
     }
     i++;
     finalCinema.prise = +splitRegex[i] + "";
     i++;
-    if (splitRegex.length > i) {
+    console.log(value);
+    console.log(this.getCinemaName(finalCinema));
+    const splitSuffix = value.split(this.getCinemaName(finalCinema));
+    if (splitSuffix.length > 1 && splitSuffix[1].length == 1 && splitSuffix[1].match(/[A-Z]/)) {
       finalCinema.priseSuffix = splitRegex[i];
+    } else if (splitSuffix.length > 1) {
+      console.log(splitSuffix);
+      finalCinema.suffix = splitSuffix[1];
     }
+    console.log(finalCinema);
     return finalCinema;
   }
 
   isCinemaFormat(value: string) {
     if (typeof value == "undefined" || value == null) return null;
-    var regexList = [/[S][0-9][0-9][A-Z][_][P][0-9][0-9][A-Z][_][P][0-9][0-9][A-Z]/gi, //S01E_P15A_P16A
-      /[S][0-9][0-9][A-Z][_][P][0-9][0-9][A-Z][_][P][0-9][0-9]/gi, //S01E_P15A_P16
-      /[S][0-9][0-9][A-Z][_][P][0-9][0-9][_][P][0-9][0-9]/gi, //S01E_P15_P16
-      /[S][0-9][0-9][_][P][0-9][0-9][_][P][0-9][0-9]/gi, //S01_P15_P16
-      /[S][0-9][0-9][_][P][0-9][0-9][A-Z][_][P][0-9][0-9]/gi, //S01_P15A_P16
-      /[S][0-9][0-9][_][P][0-9][0-9][_][P][0-9][0-9][A-Z]/gi, //S01_P15_P16A
-      /[S][0-9][0-9][A-Z][_][P][0-9][0-9][_][P][0-9][0-9][A-Z]/gi, //S01A_P15_P16A
-      /[S][0-9][0-9][_][P][0-9][0-9][A-Z][_][P][0-9][0-9][A-Z]/gi, //S01_P15A_P16A
+    var regexList = [/[A-Z][0-9][0-9][A-Z][_][A-Z][0-9][0-9][A-Z][_][A-Z][0-9][0-9][A-Z]/gi, //S01E_P15A_P16A
+      /[A-Z][0-9][0-9][_][A-Z][0-9][0-9][_][A-Z][0-9][0-9][A-Z]/gi, //S01_P15_P16A
+      /[A-Z][0-9][0-9][A-Z][_][A-Z][0-9][0-9][_][A-Z][0-9][0-9][A-Z]/gi, //S01A_P15_P16A
+      /[A-Z][0-9][0-9][_][A-Z][0-9][0-9][A-Z][_][A-Z][0-9][0-9][A-Z]/gi, //S01_P15A_P16A
+      /[A-Z][0-9][0-9][A-Z][_][A-Z][0-9][0-9][A-Z][_][A-Z][0-9][0-9]/gi, //S01E_P15A_P16
+      /[A-Z][0-9][0-9][A-Z][_][A-Z][0-9][0-9][_][A-Z][0-9][0-9]/gi, //S01E_P15_P16
+      /[A-Z][0-9][0-9][_][A-Z][0-9][0-9][_][A-Z][0-9][0-9]/gi, //S01_P15_P16
+      /[A-Z][0-9][0-9][_][A-Z][0-9][0-9][A-Z][_][A-Z][0-9][0-9]/gi, //S01_P15A_P16
+      /[0-9][0-9][A-Z][_][0-9][0-9][A-Z][_][0-9][0-9][A-Z]/gi, //01E_15A_16A
+      /[0-9][0-9][_][0-9][0-9][_][0-9][0-9][A-Z]/gi, //01_15_16A
+      /[0-9][0-9][A-Z][_][0-9][0-9][_][0-9][0-9][A-Z]/gi, //01A_15_16A
+      /[0-9][0-9][_][0-9][0-9][A-Z][_][0-9][0-9][A-Z]/gi, //01_15A_16A
+      /[0-9][0-9][A-Z][_][0-9][0-9][A-Z][_][0-9][0-9]/gi, //01E_15A_16
+      /[0-9][0-9][A-Z][_][0-9][0-9][_][0-9][0-9]/gi, //01E_15_16
+      /[0-9][0-9][_][0-9][0-9][_][0-9][0-9]/gi, //01_15_16
+      /[0-9][0-9][_][0-9][0-9][A-Z][_][0-9][0-9]/gi, //01_15A_16
     ];
     var i = 0;
     for (const regex of regexList) {
       var match = value.match(regex);
-      if (match != null) {
+      if (match != null && !(i >= 8 && isNaN(+value[0]))) {
         return {
           value: match[0],
           i: i
@@ -451,7 +507,7 @@ export class AnalyseFinishComponent implements OnInit, OnDestroy {
   }
 
   getSuffixCinema(value: string, regexResult: string) {
-    return value.split(regexResult)[1];
+    return "";//value.split(regexResult)[1]; 
   }
 
   updateProject() {
@@ -719,6 +775,7 @@ export class FileFull {
   wasDuplicate: boolean;
   tmpName: string;
   needTmpName: boolean;
+  stateAnim: string;
 }
 
 export class ImageFull {

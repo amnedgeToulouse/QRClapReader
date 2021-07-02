@@ -13,7 +13,7 @@
     <button *ngIf="imageToPrint != ''" (click)="zoomAction()" type="button" class="btn btn-primary position-relative float-right" style="margin-top: -60px;margin-right: 25px;">
         <span>{{zoomText()}}</span>
     </button>
-    <div class="m-auto" style="max-width: 466px;" *ngIf="project.state != 1">
+    <div class="m-auto" style="max-width: 763px;" *ngIf="project.state != 1">
         <ul class="nav nav-pills nav-fill">
             <li class="nav-item">
             <a [class]="classNav(true)" (click)="switchMode(true)">Cinema</a>
@@ -29,9 +29,12 @@
         </div>
         <div *ngIf="isCinema">
             <div class="modal-footer d-flex flex-row p-1 mb-2">
-            <div>
-                S
-            </div>
+            <ng-select 
+                [items]="letters" 
+                [clearable]="false"
+                style="width: 54px"
+                [(ngModel)]="cinemaValue.scenePrefix">
+            </ng-select>
             <ng-select
                 class="flex-fill"
                 style="min-width:58px;"
@@ -46,8 +49,14 @@
                 [(ngModel)]="cinemaValue.sceneSuffix">
             </ng-select>
             <div>
-                _P
+                _
             </div>
+            <ng-select 
+                [items]="letters" 
+                [clearable]="false"
+                style="width: 54px"
+                [(ngModel)]="cinemaValue.planPrefix">
+            </ng-select>
             <ng-select
                 class="flex-fill"
                 style="min-width:58px;"
@@ -62,8 +71,14 @@
                 [(ngModel)]="cinemaValue.planSuffix">
             </ng-select>
             <div>
-                _P
+                _
             </div>
+            <ng-select 
+                [items]="letters" 
+                [clearable]="false"
+                style="width: 54px"
+                [(ngModel)]="cinemaValue.prisePrefix">
+            </ng-select>
             <ng-select
                 class="flex-fill"
                 style="min-width:58px;"

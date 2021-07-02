@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { faCamera, faCameraRetro } from '@fortawesome/free-solid-svg-icons';
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ModalComponent } from '../shared/components/modal/modal.component';
 import { FileFull, ProjectFull } from './analyse-finish.component';
 import { AnalyseFinishComponent } from './analyse-finish.component';
 
@@ -20,10 +21,13 @@ export class ModalRenameComponent implements OnInit {
   cinemaValue = {
     scene: "1",
     sceneSuffix: "",
+    scenePrefix: "",
     prise: "1",
     priseSuffix: "",
+    prisePrefix: "",
     plan: "1",
     planSuffix: "",
+    planPrefix: "",
     suffix: ""
   }
   zoom = false;
@@ -63,16 +67,18 @@ export class ModalRenameComponent implements OnInit {
     'Z'
   ];
 
-  constructor(public activeModal: NgbActiveModal) { }
+  constructor(public activeModal: NgbActiveModal,
+    private modalService: NgbModal) { }
 
   ngOnInit() {
     this.file = this.parent.project.files[this.i];
     this.customRename = this.file.customRename != "" && typeof this.file.customRename != "undefined" ? this.file.customRename :
       this.file.nameAfterRename != "" ? this.file.nameAfterRename : "";
+    console.log(this.customRename);
     const regexCinema = this.parent.isCinemaFormat(this.customRename);
     if (regexCinema != null) {
-      this.cinemaValue = this.parent.cinemaSplit(regexCinema.value, regexCinema.i);
-      this.cinemaValue.suffix = this.parent.getSuffixCinema(this.customRename, regexCinema.value);
+      this.cinemaValue = this.parent.cinemaSplit(this.customRename, regexCinema.i);
+      //this.cinemaValue.suffix = this.parent.getSuffixCinema(this.customRename, regexCinema.value);
       this.customRename = "";
     } else {
       this.isCinema = false;
@@ -83,9 +89,23 @@ export class ModalRenameComponent implements OnInit {
   }
 
   confirm() {
-    this.parent.project.files[this.i].customRename = this.isCinema ? this.parent.getCinemaName(this.cinemaValue) : this.customRename;
-    this.parent.project.files[this.i].isChild = false;
-    this.activeModal.dismiss('confirm');
+    if (this.isCinema && !this.parent.isCinemaFormat(this.parent.getCinemaName(this.cinemaValue))) {
+      const modalRef = this.modalService.open(ModalComponent);
+      modalRef.componentInstance.title = "Error during apply";
+      modalRef.componentInstance.message = "The format title need 3 letters or 3 empty letters in prefix: S01_R01_T01 or 01_01_01.";
+      modalRef.componentInstance.actionButtonType = 0;
+      modalRef.componentInstance.canConfirm = false;
+      modalRef.componentInstance.actionCancelButtonMessage = "Understand";
+      modalRef.componentInstance.cancelButtonType = 2;
+      modalRef.result.then(
+        result => { },
+        reason => { }
+      );
+    } else {
+      this.parent.project.files[this.i].customRename = this.isCinema ? this.parent.getCinemaName(this.cinemaValue) : this.customRename;
+      this.parent.project.files[this.i].isChild = false;
+      this.activeModal.dismiss('confirm');
+    }
   }
 
   cancel() {

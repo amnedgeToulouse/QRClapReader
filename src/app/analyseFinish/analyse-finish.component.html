@@ -20,7 +20,7 @@
             <button type="button" [class]="classActive(activateReorder)" (click)="actionActivateReorder()">{{textActivateReorder()}}</button>
         </div> 
         <div cdkDropList class="drag-list overflow-auto h-100" (cdkDropListDropped)="drop($event)" style="width:1250px">
-            <div cdkDrag [cdkDragDisabled]="!activateReorder || file.type == 2" [class]="rowClass(file)" *ngFor="let file of project.files; let i=index;">
+            <div cdkDrag [cdkDragDisabled]="!activateReorder || file.type == 2" [@openClose]="file.stateAnim" [class]="rowClass(file)" *ngFor="let file of project.files; let i=index;">
                 <div *ngIf="file.type != 2 && project.state != 1 ">
                     <label *ngIf="!activateReorder" class="position-relative cursor-pointer align-items-center" style="width: 40px;height: 70px;margin-top: 8px;" [for]="file.relativePath">
                         <input type="checkbox" [id]="file.relativePath" style="margin-top: 30px; margin-left: 17px;" (change)="saveFileStatus()" [(ngModel)]="file.renameIt">
