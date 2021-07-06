@@ -217,6 +217,19 @@ export class DoBackupComponent implements OnInit, OnDestroy {
       this.loading = false;
       this.compareStatus = "";
       this.progress = {};
+      if (arg.reason == "noSpace") {
+        const modalRef = this.modalService.open(ModalComponent);
+        modalRef.componentInstance.title = "Error";
+        modalRef.componentInstance.message = "Not enough space on your destination: " + arg.destination + ", please retry with enough space on this destination.";
+        modalRef.componentInstance.actionButtonType = 0;
+        modalRef.componentInstance.canConfirm = false;
+        modalRef.componentInstance.actionCancelButtonMessage = "Understand";
+        modalRef.componentInstance.cancelButtonType = 2;
+        modalRef.result.then(
+          result => { },
+          reason => { }
+        );
+      }
     });
   }
 

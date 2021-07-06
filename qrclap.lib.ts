@@ -849,8 +849,8 @@ ipcMain.on("backup-folder", async (event, arg) => {
             }
         }
         for (var i = 0; i < destinations.length; i++) {
+            const destination = destinations[i];
             try {
-                const destination = destinations[i];
                 const fileList = [];
                 for (const sourceFile of sourceFiles) {
                     if (typeof filter == "undefined" || filter.length == 0 || filter.includes(sourceFile.replace(source.replaceAll("\\", "/"), destination.replaceAll("\\", "/")).replaceAll("\\", "/"))) {
@@ -865,7 +865,7 @@ ipcMain.on("backup-folder", async (event, arg) => {
                     }
                     for (const fileToProcess of fileList) {
                         if (cancelBackup) {
-                            event.reply("backup-cancel", null);
+                            event.reply("backup-cancel", { reason: "user" });
                             return;
                         }
                         const relative = fileToProcess.replaceAll("\\", "/").replace(source.replaceAll("\\", "/"), "");
@@ -878,7 +878,7 @@ ipcMain.on("backup-folder", async (event, arg) => {
                             event.reply("backup-folder-status", { ...progress, totalSize: totalSize, folder: destination, folderActual: i + 1, folderTotal: destinations.length, totalDone: totalDone, totalFolder: totalFolder, totalFolderDone: totalFolderDone });
                         });
                         if (cancelBackup) {
-                            event.reply("backup-cancel", null);
+                            event.reply("backup-cancel", { reason: "user" });
                             return;
                         }
                         totalDone += getFilesizeInBytes(fileToProcess);
@@ -886,8 +886,12 @@ ipcMain.on("backup-folder", async (event, arg) => {
                     }
                 }
             } catch (error) {
+                if (error.code == 'ENOSPC') {
+                    event.reply("backup-cancel", { reason: "noSpace", destination: destination });
+                    return;
+                }
                 if (cancelBackup) {
-                    event.reply("backup-cancel", null);
+                    event.reply("backup-cancel", { reason: "user" });
                     return;
                 }
                 console.log(error);

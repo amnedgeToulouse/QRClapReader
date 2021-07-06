@@ -1,3 +1,4 @@
 npm run build:prod
 npm run electron:build
 electron-packager . QRClap --platform=win32 --overwrite --icon=ico_windows.ico
+npm run electron:deploy
