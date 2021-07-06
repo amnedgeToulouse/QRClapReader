@@ -21,8 +21,8 @@ function createWindow(): BrowserWindow {
   win = new BrowserWindow({
     x: 0,
     y: 0,
-    width: 2560, //1280
-    height: 900,
+    width: 1280, //1280
+    height: 759,
     webPreferences: {
       nodeIntegration: true,
       allowRunningInsecureContent: (serve) ? true : false,
@@ -33,7 +33,7 @@ function createWindow(): BrowserWindow {
 
   if (serve) {
 
-    win.webContents.openDevTools();
+    //win.webContents.openDevTools();
 
     require('electron-reload')(__dirname, {
       electron: require(`${__dirname}/node_modules/electron`)
@@ -41,7 +41,7 @@ function createWindow(): BrowserWindow {
     win.loadURL('http://localhost:4200');
 
   } else {
-    win.webContents.openDevTools();
+    //win.webContents.openDevTools();
     win.loadURL(url.format({
       pathname: path.join(__dirname, 'dist/index.html'),
       protocol: 'file:',
