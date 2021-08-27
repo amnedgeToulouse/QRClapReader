@@ -6,7 +6,7 @@ const fs = require("fs");
 const fsExtra = require('fs-extra')
 const ffmpeg =
     (os.type() === "Windows_NT"
-        ? appRootDir + "/node_modules/ffmpeg-static/ffmpeg.exe"
+        ? (appRootDir + "/node_modules/ffmpeg-static/ffmpeg.exe").replace("app.asar", "app.asar.unpacked")
         : os.type() === "Darwin"
             ? (appRootDir + "/node_modules/ffmpeg-static/ffmpeg").replace("app.asar", "app.asar.unpacked")
             : "").replace(/\\/g, "/");
