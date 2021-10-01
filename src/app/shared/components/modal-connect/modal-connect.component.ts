@@ -26,7 +26,7 @@ export class ModalConnectComponent implements OnInit {
     if (this.validateForm()) {
       this.loading = true;
       this.type = Math.round(Math.random());
-      this.httpRequest.Connexion(this.mail, this.password).then(() => {
+      this.httpRequest.Connexion(this.mail, this.password, this.validateEmail(this.mail) ? this.mail : null).then(() => {
         this.error = "";
         this.activeModal.dismiss('connected');
       }).catch((error) => {

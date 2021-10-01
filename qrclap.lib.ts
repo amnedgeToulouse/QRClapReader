@@ -25,8 +25,8 @@ const getSize = require('get-folder-size');
 
 ncp.limit = 16;
 
-const URL_API = "http://api.qrclap.com:8080/"
-const HOST_API = "api.qrclap.com"
+const URL_API = "http://localhost:8080/" //api.qrclap.com
+const HOST_API = "localhost" //api.qrclap.com
 const PORT_API = 8080
 const URL_WORDPRESS = "https://qrclap.com/"
 const HOST_WORDPRESS = "qrclap.com"
@@ -733,6 +733,8 @@ ipcMain.on("rename-files", (event, arg) => {
     }).then((p) => {
         renameFilesProjectFolder(project, isRenamedProject, arg.folderToAnalyse)
         event.reply("rename-file-finished", project);
+    }).catch((error) => {
+        event.reply("not-enough-qr", project);
     });
 });
 
@@ -986,11 +988,19 @@ ipcMain.on("import-file-backup-rename", async (event, arg) => {
 
 ipcMain.on("get-arg-process", (event, arg) => {
     event.returnValue = process.argv;
-})
+});
 
 ipcMain.on("get-folder-size", async (event, arg) => {
     getSize(arg, (err, size) => {
         if (err) { throw err; }
         event.returnValue = size;
     });
-})
+});
+
+ipcMain.on("get-qr-clap", (event, arg) => {
+    require('electron').shell.openExternal("https://qrclap.com/get-qrclap");
+});
+
+ipcMain.on("contact-us", (event, arg) => {
+    require('electron').shell.openExternal("https://qrclap.com/#sec-edf1");
+});

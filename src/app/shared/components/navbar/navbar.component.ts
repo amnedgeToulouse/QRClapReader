@@ -7,6 +7,7 @@ import { ElectronService } from 'ngx-electron';
 import { Constant } from '../../../constant';
 import { GetParamService } from '../../service/get-param.service';
 import { HttpRequestService } from '../../service/http-request.service';
+import { SaveParamService } from '../../service/save-param';
 import { ModalSuggestionComponent } from '../modal-suggestion/modal-suggestion.component';
 import { ModalComponent } from '../modal/modal.component';
 
@@ -26,6 +27,8 @@ export class NavBarComponent implements OnInit {
   canApplyMaj = false;
   interval = null;
   loading = false;
+  static qrConsumtion: QrConsumption = null;
+  static NAV_BAR: NavBarComponent;
 
   constructor(private router: Router,
     private activatedRoute: ActivatedRoute,
@@ -33,8 +36,10 @@ export class NavBarComponent implements OnInit {
     private getParam: GetParamService,
     electronServiceInstance: ElectronService,
     readonly snackBar: MatSnackBar,
-    private httpRequest: HttpRequestService) {
+    private httpRequest: HttpRequestService,
+    private saveParam: SaveParamService) {
     this.renderer = electronServiceInstance.ipcRenderer;
+    NavBarComponent.NAV_BAR = this;
   }
 
   ngOnInit(): void {
@@ -54,6 +59,7 @@ export class NavBarComponent implements OnInit {
       this.showNotification = true;
       this.canApplyMaj = true;
     });
+    this.updateQrStock();
   }
 
   closeNotification() {
@@ -120,6 +126,31 @@ export class NavBarComponent implements OnInit {
     );
   }
 
+  updateQrStock() {
+    if (!this.httpRequest.CheckToken()) return;
+    this.httpRequest.SendRequest({
+      host: Constant.HOST_API,
+      port: Constant.PORT_API,
+      data: null,
+      method: "GET",
+      path: "/qrclap/getactiveqrconsumption",
+      token: this.saveParam.GetParam('token'),
+      processOtherError: true
+    }).then((qrConsumtion: QrConsumption) => {
+      console.log(qrConsumtion);
+      NavBarComponent.qrConsumtion = qrConsumtion;
+      if (qrConsumtion.maxQuantity == null) {
+        NavBarComponent.qrConsumtion.maxQuantity = 1000;
+        NavBarComponent.qrConsumtion.quantity = 1000;
+      }
+      console.log(qrConsumtion);
+    });
+  }
+
+  getQrConsumption() {
+    return NavBarComponent.qrConsumtion;
+  }
+
   leaveProject() {
     const modalRef = this.modalService.open(ModalComponent);
     modalRef.componentInstance.title = this.isBackup() ? "Leave backup" : "Leave the project";
@@ -145,4 +176,13 @@ export class NavBarComponent implements OnInit {
     return typeof this.getParam.GetParam('projectSelected') != 'undefined' ? this.getParam.GetParam('projectSelected') : "";
   }
 
+}
+
+export class QrConsumption {
+  id: number;
+  user: number;
+  begin: Date;
+  end: Date;
+  quantity: number;
+  maxQuantity: number;
 }

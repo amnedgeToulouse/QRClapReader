@@ -22,6 +22,8 @@ export class ModalComponent implements OnInit {
   imageToPrint = "";
   zoom = false;
   removeClose = false;
+  closeOnConfirm = true;
+  funcToCall = () => { };
 
   isCreateProject = false;
 
@@ -49,7 +51,11 @@ export class ModalComponent implements OnInit {
         value: this.projectName
       });
     } else {
-      this.activeModal.dismiss('confirm');
+      if (this.closeOnConfirm) {
+        this.activeModal.dismiss('confirm');
+      } else {
+        this.funcToCall();
+      }
     }
   }
 

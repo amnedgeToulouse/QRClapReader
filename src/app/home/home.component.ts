@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { IpcRenderer } from 'electron';
+import { ElectronService } from 'ngx-electron';
 import { Constant } from '../constant';
 import { ModalComponent } from '../shared/components/modal/modal.component';
 import { GetParamService } from '../shared/service/get-param.service';
@@ -16,29 +18,68 @@ import { SaveParamService } from '../shared/service/save-param';
 export class HomeComponent implements OnInit {
 
   loading = true;
-
   projectSelected = "";
-
   searchValue = "";
-
   projects: Project[] = [];
-
   projectsFiltered = [];
-
   projectsArchivedFiltered = [];
-
   faSearch = faSearch;
-
   projectLoaded = false;
+  public renderer: IpcRenderer;
 
   constructor(private modalService: NgbModal,
     private router: Router,
     private httpRequest: HttpRequestService,
     private saveParam: SaveParamService,
-    private getParam: GetParamService) { }
+    private electronServiceInstance: ElectronService,
+    private getParam: GetParamService) {
+    this.renderer = this.electronServiceInstance.ipcRenderer;
+  }
 
   ngOnInit(): void {
-    this.updateProject();
+    this.checkIsSubscribe();
+  }
+
+  checkIsSubscribe(): void {
+    this.httpRequest.SendRequest({
+      host: Constant.HOST_API,
+      port: Constant.PORT_API,
+      data: null,
+      method: "GET",
+      path: "/qrclap/issubscribe",
+      token: this.saveParam.GetParam('token'),
+      processOtherError: true
+    }).then((subscription) => {
+      if (subscription.id == null) {
+        const modalRef = this.modalService.open(ModalComponent, { backdrop: 'static' });
+        modalRef.componentInstance.title = "Subscription to QRClap is needed";
+        modalRef.componentInstance.message = "You can't access to the application because you need to be subscribed, you can access subscribe page by clicking \"Subscription\" button.";
+        modalRef.componentInstance.actionButtonMessage = "Subscription"
+        modalRef.componentInstance.actionButtonType = 0;
+        modalRef.componentInstance.removeClose = true;
+        modalRef.componentInstance.actionCancelButtonMessage = "Disconnect";
+        modalRef.componentInstance.cancelButtonType = 3;
+        modalRef.componentInstance.canSecondAction = true;
+        modalRef.componentInstance.closeOnConfirm = false;
+        modalRef.componentInstance.actionSecondButtonMessage = "Retry";
+        modalRef.componentInstance.secondButtonType = 1;
+        modalRef.componentInstance.funcToCall = () => {
+          this.renderer.send("get-qr-clap");
+        };
+        modalRef.result.then(
+          result => { },
+          reason => {
+            if (reason == "cancel") {
+              this.httpRequest.Logout();
+            } else if (reason == "secondConfirm") {
+              this.checkIsSubscribe();
+            }
+          }
+        );
+      } else {
+        this.updateProject();
+      }
+    });
   }
 
   updateProject() {

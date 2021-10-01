@@ -1,77 +1,141 @@
 <div class="background-base p-3">
-    <div class="d-flex flex-row align-items-center justify-content-center w-100">
-        <div class="p-2 flex-fill">
-            <h1 class="title-text"><span class="yellow-text">P</span>rojects</h1>
-        </div>
-        <div class="form-group has-search">
-            <span class="form-control-feedback"><fa-icon [icon]="faSearch"></fa-icon></span>
-            <input (keyup)="updateFilter()" (cut)="updateFilter()" (past)="updateFilter()" type="text" class="form-control" [(ngModel)]="searchValue" placeholder="Search">
-        </div>
+  <div class="d-flex flex-row align-items-center justify-content-center w-100">
+    <div class="p-2 flex-fill">
+      <h1 class="title-text"><span class="yellow-text">P</span>rojects</h1>
     </div>
-    <mat-tab-group style="width:1080px;">
-        <mat-tab label="Active"> 
-            <div class="project-container" *ngIf="projects.length>0">
-                <div *ngFor="let project of projectsFiltered" (click)="openProject(project)" class="project-card d-flex flex-row align-items-center justify-content-center cursor-pointer">
-                    <div class="p-2 flex-fill">
-                        <h3 class="project-name">{{project.name}}</h3>
-                        <span class="project-date">{{formatDate(project.date)}} - <span [class]="getClassStateProject(project)">{{getStateProject(project)}}</span></span>
-                    </div>
-                    <div class="project-text-info">
-                        Total: {{project.total}}
-                    </div>
-                    <div class="project-text-info">
-                        Scene: {{project.scene}}
-                    </div>
-                    <div class="project-text-info">
-                        Plan: {{project.plan}}
-                    </div>
-                    <div class="project-text-info">
-                        Prise: {{project.prise}}
-                    </div>
-                    <div class="project-text-info">
-                        Divers: {{project.divers}}
-                    </div>
-                </div>
-                <div class="d-flex flex-row align-items-center justify-content-center h-75 w-100" *ngIf="projectsFiltered.length==0">
-                    <div class="white-indication-subtitle">No project match this research</div>
-                </div> 
-            </div>
-        </mat-tab>
-        <mat-tab label="Archived">
-            <div class="project-container" *ngIf="projects.length>0">
-                <div *ngFor="let project of projectsArchivedFiltered" (click)="openProject(project)" class="project-card d-flex flex-row align-items-center justify-content-center cursor-pointer">
-                    <div class="p-2 flex-fill">
-                        <h3 class="project-name">{{project.name}}</h3>
-                        <span class="project-date">{{formatDate(project.date)}} - <span [class]="getClassStateProject(project)">{{getStateProject(project)}}</span></span>
-                    </div>
-                    <div class="p-4 project-text-info">
-                        Total: {{project.total}}
-                    </div>
-                    <div class="p-4 project-text-info">
-                        Scene: {{project.scene}}
-                    </div>
-                    <div class="p-4 project-text-info">
-                        Plan: {{project.plan}}
-                    </div>
-                    <div class="p-4 project-text-info">
-                        Prise: {{project.prise}}
-                    </div>
-                    <div class="p-4 project-text-info">
-                        Divers: {{project.divers}}
-                    </div>
-                </div>
-                <div class="d-flex flex-row align-items-center justify-content-center h-75 w-100" *ngIf="projectsArchivedFiltered.length==0">
-                    <div class="white-indication-subtitle">{{searchValue == '' ? 'You have no project archived' : 'No project archived match this research'}}</div>
-                </div> 
-            </div>
-        </mat-tab>
-      </mat-tab-group>
-    <div class="button-action" (click)="newProject()" *ngIf="projects.length>0">New Project</div>
-    <div class="button-action button-action-secondary" style="right: 260px;" (click)="doBackup()" *ngIf="projects.length>0">Do Backup</div>
-    <div class="d-flex flex-row align-items-center justify-content-center h-75 w-100" *ngIf="projects.length==0">
-        <div class="button-action button-action-center" (click)="newProject()">New Project</div>
-        <div class="button-action button-action-center button-action-secondary ml-2" (click)="doBackup()">Do Backup</div>
-    </div> 
+    <div class="form-group has-search">
+      <span class="form-control-feedback"
+        ><fa-icon [icon]="faSearch"></fa-icon
+      ></span>
+      <input
+        (keyup)="updateFilter()"
+        (cut)="updateFilter()"
+        (past)="updateFilter()"
+        type="text"
+        class="form-control"
+        [(ngModel)]="searchValue"
+        placeholder="Search"
+      />
+    </div>
+  </div>
+  <mat-tab-group style="width: 1080px">
+    <mat-tab label="Active">
+      <div class="project-container" *ngIf="projects.length > 0">
+        <div
+          *ngFor="let project of projectsFiltered"
+          (click)="openProject(project)"
+          class="
+            project-card
+            d-flex
+            flex-row
+            align-items-center
+            justify-content-center
+            cursor-pointer
+          "
+        >
+          <div class="p-2 flex-fill">
+            <h3 class="project-name">{{ project.name }}</h3>
+            <span class="project-date"
+              >{{ formatDate(project.date) }} -
+              <span [class]="getClassStateProject(project)">{{
+                getStateProject(project)
+              }}</span></span
+            >
+          </div>
+          <div class="project-text-info">Total: {{ project.total }}</div>
+          <div class="project-text-info">Scene: {{ project.scene }}</div>
+          <div class="project-text-info">Plan: {{ project.plan }}</div>
+          <div class="project-text-info">Prise: {{ project.prise }}</div>
+          <div class="project-text-info">Divers: {{ project.divers }}</div>
+        </div>
+        <div
+          class="
+            d-flex
+            flex-row
+            align-items-center
+            justify-content-center
+            h-75
+            w-100
+          "
+          *ngIf="projectsFiltered.length == 0"
+        >
+          <div class="white-indication-subtitle">
+            No project match this research
+          </div>
+        </div>
+      </div>
+    </mat-tab>
+    <mat-tab label="Archived">
+      <div class="project-container" *ngIf="projects.length > 0">
+        <div
+          *ngFor="let project of projectsArchivedFiltered"
+          (click)="openProject(project)"
+          class="
+            project-card
+            d-flex
+            flex-row
+            align-items-center
+            justify-content-center
+            cursor-pointer
+          "
+        >
+          <div class="p-2 flex-fill">
+            <h3 class="project-name">{{ project.name }}</h3>
+            <span class="project-date"
+              >{{ formatDate(project.date) }} -
+              <span [class]="getClassStateProject(project)">{{
+                getStateProject(project)
+              }}</span></span
+            >
+          </div>
+          <div class="p-4 project-text-info">Total: {{ project.total }}</div>
+          <div class="p-4 project-text-info">Scene: {{ project.scene }}</div>
+          <div class="p-4 project-text-info">Plan: {{ project.plan }}</div>
+          <div class="p-4 project-text-info">Prise: {{ project.prise }}</div>
+          <div class="p-4 project-text-info">Divers: {{ project.divers }}</div>
+        </div>
+        <div
+          class="
+            d-flex
+            flex-row
+            align-items-center
+            justify-content-center
+            h-75
+            w-100
+          "
+          *ngIf="projectsArchivedFiltered.length == 0"
+        >
+          <div class="white-indication-subtitle">
+            {{
+              searchValue == ""
+                ? "You have no project archived"
+                : "No project archived match this research"
+            }}
+          </div>
+        </div>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+  <div class="button-action" (click)="newProject()" *ngIf="projects.length > 0">
+    New Project
+  </div>
+  <div
+    class="button-action button-action-secondary"
+    style="right: 260px"
+    (click)="doBackup()"
+    *ngIf="projects.length > 0"
+  >
+    Do Backup
+  </div>
+  <div
+    class="d-flex flex-row align-items-center justify-content-center h-75 w-100"
+    *ngIf="projects.length == 0"
+  >
+    <div class="button-action button-action-center" (click)="newProject()">
+      New Project
+    </div>
+    <!-- <div class="button-action button-action-center button-action-secondary ml-2" (click)="doBackup()">Do Backup</div> -->
+  </div>
 </div>
 
 <app-loader [loading]="loading"></app-loader>

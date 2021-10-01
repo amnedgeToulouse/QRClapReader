@@ -102,21 +102,28 @@ export class HttpRequestService {
 
     Logout() {
         const json = this.saveParam.GetParams();
-        json["token"] = "";
+        delete json["token"];
         this.saveParam.SaveParams(json);
         this.router.navigate(['/']);
     }
 
-    Connexion(username, password) {
+    Connexion(username, password, email) {
         return new Promise((resolve, error) => {
             if (username == "" || password == "") return;
+            let dataToSend: any = {
+                username: username,
+                password: password
+            };
+            if (email != null) {
+                dataToSend = {
+                    email: email,
+                    password: password
+                }
+            }
             this.SendRequest({
                 host: Constant.HOST_WORDPRESS,
                 port: 443,
-                data: {
-                    username: username,
-                    password: password
-                },
+                data: dataToSend,
                 method: "POST",
                 path: "/?rest_route=/simple-jwt-login/v1/auth",
                 token: null,
@@ -126,6 +133,8 @@ export class HttpRequestService {
                     const json = this.saveParam.GetParams();
                     json["token"] = data.data.jwt;
                     json["firstConnexion"] = true;
+                    json["username"] = email != null ? email : username;
+                    json["password"] = password;
                     this.saveParam.SaveParams(json);
                 }
                 resolve(data);

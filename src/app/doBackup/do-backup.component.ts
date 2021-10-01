@@ -58,7 +58,6 @@ export class DoBackupComponent implements OnInit, OnDestroy {
     this.interval = setInterval(() => {
       this.ref.detectChanges();
     }, 500);
-    this.renderer = this.electronServiceInstance.ipcRenderer;
     this.remote = this.electronServiceInstance.remote;
   }
 

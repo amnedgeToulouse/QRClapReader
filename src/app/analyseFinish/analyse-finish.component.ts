@@ -14,6 +14,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { SaveParamService } from '../shared/service/save-param';
 import { Utils } from '../shared/service/utils';
 import { animate, state, style, transition, trigger } from '@angular/animations';
+import { NavBarComponent } from '../shared/components/navbar/navbar.component';
 
 @Component({
   selector: 'app-analyse-finish',
@@ -590,10 +591,13 @@ export class AnalyseFinishComponent implements OnInit, OnDestroy {
     if (this.loading) return;
     const projectClone: ProjectFull = JSON.parse(JSON.stringify(this.project));
     var canBeSend = true;
+    var nbRename = 0;
     for (var i = 0; i < projectClone.files.length; i++) {
       if (projectClone.files[i].renameIt && projectClone.files[i].needManualRename) {
         canBeSend = false;
-        break;
+      }
+      if ((projectClone.files[i].type == 0 || projectClone.files[i].type == 3) && projectClone.files[i].renameIt) {
+        nbRename++;
       }
     }
     if (!canBeSend) {
@@ -610,9 +614,15 @@ export class AnalyseFinishComponent implements OnInit, OnDestroy {
       );
       return;
     }
+    console.log(projectClone);
     const modalRef = this.modalService.open(ModalComponent);
     modalRef.componentInstance.title = "Rename files";
-    modalRef.componentInstance.message = "Are you sure to rename all files selected ?";
+    modalRef.componentInstance.message = "Are you sure to rename " + nbRename + " files ? ";
+    if (NavBarComponent.NAV_BAR.getQrConsumption().id != null) {
+      modalRef.componentInstance.message += "It will consume " + nbRename + " QR stock of your monthly " + NavBarComponent.NAV_BAR.getQrConsumption().maxQuantity + " QR stock.";
+    } else {
+      modalRef.componentInstance.message += "It will not consume your monthly " + NavBarComponent.NAV_BAR.getQrConsumption().maxQuantity + " QR stock, because you are in test mode.";
+    }
     modalRef.componentInstance.actionButtonMessage = "Rename files";
     modalRef.componentInstance.actionButtonType = 0;
     modalRef.componentInstance.actionCancelButtonMessage = "No";
@@ -638,6 +648,8 @@ export class AnalyseFinishComponent implements OnInit, OnDestroy {
             projectClone.files[i].qrs = [];
           }
           this.loading = true;
+          this.renderer.removeAllListeners("rename-file-finished");
+          this.renderer.removeAllListeners("not-enough-qr");
           this.renderer.send("rename-files", {
             idProject: this.idProject,
             folderToAnalyse: this.getParam.GetParam('folderToAnalyse'),
@@ -645,6 +657,7 @@ export class AnalyseFinishComponent implements OnInit, OnDestroy {
             project: projectClone
           });
           this.renderer.once("rename-file-finished", (event, arg) => {
+            NavBarComponent.NAV_BAR.updateQrStock();
             const modalRef = this.modalService.open(ModalComponent);
             modalRef.componentInstance.title = "Rename finished";
             modalRef.componentInstance.message = "The rename has been completed successfully !";
@@ -656,6 +669,24 @@ export class AnalyseFinishComponent implements OnInit, OnDestroy {
               reason => {
                 this.loading = false;
                 this.router.navigate(['/backupRename'], this.getParam.GetQueryParams());
+              }
+            );
+          });
+          this.renderer.once("not-enough-qr", (event, arg) => {
+            const modalRef = this.modalService.open(ModalComponent);
+            modalRef.componentInstance.title = "Not enough QR stock";
+            modalRef.componentInstance.message = "You reach the maximum limit of QR for this month, please contact us to raise your limitation.";
+            modalRef.componentInstance.actionButtonMessage = "Contact us (FR/EN)"
+            modalRef.componentInstance.actionButtonType = 0;
+            modalRef.componentInstance.actionCancelButtonMessage = "Close";
+            modalRef.componentInstance.cancelButtonType = 2;
+            modalRef.result.then(
+              result => { },
+              reason => {
+                if (reason == "confirm") {
+                  this.renderer.send("contact-us");
+                }
+                this.loading = false;
               }
             );
           });
