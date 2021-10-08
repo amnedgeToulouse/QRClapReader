@@ -1,40 +1,62 @@
 <app-loader [loading]="loading"></app-loader>
 <div *ngIf="project" class="background-base p-3">
     <div style="max-width: 1226px;" class="h-100 d-flex flex-column">
-        <div class="d-flex flex-row align-items-center" >
+        <div class="d-flex flex-row align-items-center">
             <h1 class="title-text flex-fill"><span class="yellow-text">F</span>older analyzed (3/3)</h1>
-            <button (click)="cancelAnalyze()" type="button" class="btn btn-danger" *ngIf="project.state != 1">Delete analyze</button>
-            <button (click)="renameFiles()" type="button" class="btn btn-success" *ngIf="project.state != 1">Rename files</button>
+            <button (click)="cancelAnalyze()" type="button" class="btn btn-danger" *ngIf="project.state != 1">Delete
+                analyze</button>
+            <button (click)="renameFiles()" type="button" class="btn btn-success" *ngIf="project.state != 1">Rename
+                files</button>
         </div>
-        <div class="white-indication-subtitle">List of file which has been found by analyse, green = QR found, orange = No QR found, red = Corrupt or invalid file, grey = Disable</div>
+        <div class="white-indication-subtitle">List of file which has been found by analyse, green = QR found, orange =
+            No QR found, red = Corrupt or invalid file, grey = Disable</div>
         <div class="form-check form-check-inline p-1">
-            <button type="button" [class]="classActive(showFalseTake)" (click)="actionShowFalseTake()">{{textShowFalseTake()}}</button>
-            <button type="button" [class]="classActive(showAutoTakeRename)" (click)="actionShowAutoTakeRename()">{{textShowAutoTakeRename()}}</button>
+            <button type="button" [class]="classActive(showFalseTake)"
+                (click)="actionShowFalseTake()">{{textShowFalseTake()}}</button>
+            <button type="button" [class]="classActive(showAutoTakeRename)"
+                (click)="actionShowAutoTakeRename()">{{textShowAutoTakeRename()}}</button>
         </div>
         <!-- <div class="white-indication-subtitle"><a class="cursor-pointer yellow-text" (click)="actionShowFalseTake()">{{textShowFalseTake()}}</a> / <a class="cursor-pointer yellow-text" (click)="actionShowAutoTakeRename()">{{textShowAutoTakeRename()}}</a></div> -->
         <div class="white-indication-subtitle p-1 d-flex flex-row" *ngIf="project.state != 1">
             <button type="button" class="btn btn-outline-warning" (click)="actionAllSelect(true)">Select all</button>
             <button type="button" class="btn btn-outline-warning" (click)="actionAllSelect(false)">Deselect all</button>
-            <div class="flex-fill"></div>
-            <button type="button" class="btn btn-outline-warning" (click)="restoreByDateOrder()">Restore initial file order</button>
-            <button type="button" [class]="classActive(activateReorder)" (click)="actionActivateReorder()">{{textActivateReorder()}}</button>
-        </div> 
+            <div class="flex-fill" style="padding-left: 50px;padding-right: 50px;">
+                <input [(ngModel)]="filterName" (keyup)="updateFilter()" (cut)="updateFilter()" (past)="updateFilter()"
+                    class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+            </div>
+            <button type="button" class="btn btn-outline-warning" (click)="restoreByDateOrder()">Restore initial file
+                order</button>
+            <button type="button" [class]="classActive(activateReorder)"
+                (click)="actionActivateReorder()">{{textActivateReorder()}}</button>
+        </div>
         <div cdkDropList class="drag-list overflow-auto h-100" (cdkDropListDropped)="drop($event)" style="width:1250px">
-            <div cdkDrag [cdkDragDisabled]="!activateReorder || file.type == 2" [@openClose]="file.stateAnim" [class]="rowClass(file)" *ngFor="let file of project.files; let i=index;">
+            <div cdkDrag [cdkDragDisabled]="!activateReorder || file.type == 2" [@openClose]="file.stateAnim"
+                [class]="rowClass(file)" *ngFor="let file of project.files; let i=index;">
                 <div *ngIf="file.type != 2 && project.state != 1 ">
-                    <label *ngIf="!activateReorder" class="position-relative cursor-pointer align-items-center" style="width: 40px;height: 70px;margin-top: 8px;" [for]="file.relativePath">
-                        <input type="checkbox" [id]="file.relativePath" style="margin-top: 30px; margin-left: 17px;" (change)="saveFileStatus()" [(ngModel)]="file.renameIt">
+                    <label *ngIf="!activateReorder" class="position-relative cursor-pointer align-items-center"
+                        style="width: 40px;height: 70px;margin-top: 8px;" [for]="file.relativePath">
+                        <input type="checkbox" [id]="file.relativePath" style="margin-top: 30px; margin-left: 17px;"
+                            (change)="saveFileStatus()" [(ngModel)]="file.renameIt">
                     </label>
                     <div class="p-3" *ngIf="activateReorder" style="color: white;">
                         <fa-icon [icon]="faBars"></fa-icon>
                     </div>
                 </div>
-                <div class="flex-fill p-2 cursor-pointer white-indication-subtitle" (click)="renameCustomFile(file, i)" >
-                    <div *ngIf="file.type != 2 && file.renameIt">{{file.nameBeforeRename}} -> <span>{{addExtension(file.nameBeforeRename, getRenameName(file))}}</span></div>
-                    <div *ngIf="(!file.nameAfterRename && file.type == 2) || !file.renameIt">{{file.nameBeforeRename}}{{file.type == 2 ? " - Corrupt or Invalid, click and access to the file" : ""}}</div>
-                    <div *ngIf="file.duration != 0"><fa-icon [icon]="faClock"></fa-icon><span class="clock-time"> {{formatDuration(file)}}</span>&nbsp;&nbsp;<fa-icon (click)="openDirectory(file, $event)" class="cursor-pointer" [icon]="faFolderOpen"></fa-icon></div>
+                <div class="flex-fill p-2 cursor-pointer white-indication-subtitle" (click)="renameCustomFile(file, i)">
+                    <div *ngIf="file.type != 2 && file.renameIt">{{file.nameBeforeRename}} ->
+                        <span>{{addExtension(file.nameBeforeRename, getRenameName(file))}}</span>
+                    </div>
+                    <div *ngIf="(!file.nameAfterRename && file.type == 2) || !file.renameIt">
+                        {{file.nameBeforeRename}}{{file.type == 2 ? " - Corrupt or Invalid, click and access to the
+                        file" : ""}}</div>
+                    <div *ngIf="file.duration != 0">
+                        <fa-icon [icon]="faClock"></fa-icon><span class="clock-time">
+                            {{formatDuration(file)}}</span>&nbsp;&nbsp;<fa-icon (click)="openDirectory(file, $event)"
+                            class="cursor-pointer" [icon]="faFolderOpen"></fa-icon>
+                    </div>
                 </div>
-                <img *ngFor="let qr of file.qrs; let qri=index;" [src]="qr.dataBase64" (click)="zoomImage(qr.dataBase64, i)" [style]="styleQr(qri)" />
+                <img *ngFor="let qr of file.qrs; let qri=index;" [src]="qr.dataBase64"
+                    (click)="zoomImage(qr.dataBase64, i)" [style]="styleQr(qri)" />
             </div>
         </div>
     </div>
