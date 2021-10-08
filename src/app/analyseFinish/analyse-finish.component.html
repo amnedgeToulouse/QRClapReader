@@ -52,7 +52,8 @@
                     <div *ngIf="file.duration != 0">
                         <fa-icon [icon]="faClock"></fa-icon><span class="clock-time">
                             {{formatDuration(file)}}</span>&nbsp;&nbsp;<fa-icon (click)="openDirectory(file, $event)"
-                            class="cursor-pointer" [icon]="faFolderOpen"></fa-icon>
+                            class="cursor-pointer" [icon]="faFolderOpen"></fa-icon>&nbsp;<span
+                            class="clock-time">{{getFolderName(file)}}</span>
                     </div>
                 </div>
                 <img *ngFor="let qr of file.qrs; let qri=index;" [src]="qr.dataBase64"

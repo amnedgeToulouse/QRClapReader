@@ -786,6 +786,10 @@ export class AnalyseFinishComponent implements OnInit, OnDestroy {
     this.showAutoTakeRename = false;
   }
 
+  getFolderName(file: FileFull) {
+    return file.relativePath.replace(file.nameBeforeRename, "");
+  }
+
   canBeShow(file: FileFull) {
     return ((!this.showFalseTake && !this.showAutoTakeRename) ||
       (this.showFalseTake && file.duration < 10 && file.type == 0) ||
@@ -793,7 +797,8 @@ export class AnalyseFinishComponent implements OnInit, OnDestroy {
       (this.filterName === "" ||
         (file.nameAfterRename != null && file.nameAfterRename.toLowerCase().includes(this.filterName.toLowerCase())) ||
         (file.tmpName != null && file.tmpName.toLowerCase().includes(this.filterName.toLowerCase())) ||
-        (file.nameBeforeRename != null && file.nameBeforeRename.toLowerCase().includes(this.filterName.toLowerCase())));
+        (file.nameBeforeRename != null && file.nameBeforeRename.toLowerCase().includes(this.filterName.toLowerCase())) ||
+        (file.customRename != null && file.customRename.toLowerCase().includes(this.filterName.toLowerCase())));
   }
 
 }
