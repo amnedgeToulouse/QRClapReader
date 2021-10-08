@@ -45,6 +45,7 @@ export class AnalyseFinishComponent implements OnInit, OnDestroy {
   loaded = false;
   showFalseTake = false;
   showAutoTakeRename = false;
+  filterName = "";
   interval = null;
 
   faClock = faClock;
@@ -71,6 +72,10 @@ export class AnalyseFinishComponent implements OnInit, OnDestroy {
     if (this.interval) {
       clearInterval(this.interval);
     }
+  }
+
+  updateFilter() {
+    this.updateFile();
   }
 
   updateFile() {
@@ -335,11 +340,22 @@ export class AnalyseFinishComponent implements OnInit, OnDestroy {
       result => { },
       reason => {
         if (reason == "confirm") {
-          this.project.files.sort(function (a: FileFull, b: FileFull) { return new Date(a.createdDate).getTime() > new Date(b.createdDate).getTime() ? 1 : -1 });
-          this.saveOrder();
+          this.restoreOrder();
         }
       }
     );
+  }
+
+  restoreOrder() {
+    this.project.files.sort(function (a: FileFull, b: FileFull) {
+      const relativeA = a.relativePath.replace(a.nameBeforeRename, "");
+      const relativeB = b.relativePath.replace(b.nameBeforeRename, "");
+      if (relativeA !== relativeB) {
+        return relativeA.localeCompare(relativeB);
+      }
+      return new Date(a.createdDate).getTime() > new Date(b.createdDate).getTime() ? 1 : -1
+    });
+    this.saveOrder();
   }
 
   nameByBefore(file, i) {
@@ -584,6 +600,9 @@ export class AnalyseFinishComponent implements OnInit, OnDestroy {
         this.updateFile();
         this.loading = false;
       }
+      if (this.project.files.length != 0 && this.project.files[0].order == null) {
+        this.restoreOrder();
+      }
     });
   }
 
@@ -768,9 +787,13 @@ export class AnalyseFinishComponent implements OnInit, OnDestroy {
   }
 
   canBeShow(file: FileFull) {
-    return (!this.showFalseTake && !this.showAutoTakeRename) ||
+    return ((!this.showFalseTake && !this.showAutoTakeRename) ||
       (this.showFalseTake && file.duration < 10 && file.type == 0) ||
-      (this.showAutoTakeRename && file.isChild);
+      (this.showAutoTakeRename && file.isChild)) &&
+      (this.filterName === "" ||
+        (file.nameAfterRename != null && file.nameAfterRename.toLowerCase().includes(this.filterName.toLowerCase())) ||
+        (file.tmpName != null && file.tmpName.toLowerCase().includes(this.filterName.toLowerCase())) ||
+        (file.nameBeforeRename != null && file.nameBeforeRename.toLowerCase().includes(this.filterName.toLowerCase())));
   }
 
 }
@@ -795,6 +818,7 @@ export class FileFull {
   createdDate;
   duration: number;
   type: number;
+  order: number;
   nameBeforeRename: string;
   nameAfterRename: string;
   finalName: string;
