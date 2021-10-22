@@ -1,6 +1,6 @@
 export class Constant {
-    static URL_API = "http://api.qrclap.com:8080/" //api.qrclap.com
-    static HOST_API = "api.qrclap.com" //api.qrclap.com
+    static URL_API = "http://localhost:8080/" //api.qrclap.com
+    static HOST_API = "localhost" //api.qrclap.com
     static PORT_API = 8080
     static URL_WORDPRESS = "https://qrclap.com/"
     static HOST_WORDPRESS = "qrclap.com"

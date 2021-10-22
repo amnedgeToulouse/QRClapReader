@@ -25,8 +25,8 @@ const getSize = require('get-folder-size');
 
 ncp.limit = 16;
 
-const URL_API = "http://api.qrclap.com:8080/" //api.qrclap.com
-const HOST_API = "api.qrclap.com" //api.qrclap.com
+const URL_API = "http://localhost:8080/" //api.qrclap.com
+const HOST_API = "localhost" //api.qrclap.com
 const PORT_API = 8080
 const URL_WORDPRESS = "https://qrclap.com/"
 const HOST_WORDPRESS = "qrclap.com"
