@@ -137,7 +137,7 @@ export class AnalyseFinishComponent implements OnInit, OnDestroy {
     if (f.customRename != '' && typeof f.customRename != "undefined") {
       toReturn = f.customRename;
     }
-    if (toReturn == "")
+    if (toReturn == "" && f.mode != 2 && f.mode != 3)
       toReturn = f.nameAfterRename == null || typeof f.nameAfterRename == "undefined" ? '' : f.nameAfterRename;
     if (withoutDupli) {
       const split = toReturn.split("_");
@@ -179,7 +179,7 @@ export class AnalyseFinishComponent implements OnInit, OnDestroy {
     if (file.type == 2) {
       suffix = "row-invalid";
     } else {
-      if (file.needManualRename) {
+      if (file.needManualRename || this.getRenameName(file) == 'Need manual rename') {
         suffix = "row-warning";
       } else if (file.isChild) {
         suffix = "row-valid-child";
@@ -194,20 +194,43 @@ export class AnalyseFinishComponent implements OnInit, OnDestroy {
     return "d-flex flex-row align-items-center row-project drag-box " + suffix;
   }
 
-  findPreviousValidFile(i, file: FileFull): FileFull {
+  findPreviousValidFile(i, file: FileFull, isCinema): FileFull {
     if (i == 0) {
       return null;
     }
     i--;
     while (i >= 0) {
       if (this.getRenameName(this.project.files[i]) != '' &&
-        (this.getRenameName(this.project.files[i]) != 'Need manual rename' || (this.project.files[i].needManualRename && (this.project.files[i].mode == 2 || this.project.files[i].mode == 3) && (this.getRenameName(file) == '' || file.needManualRename))) &&
+        this.getFolderName(this.project.files[i]) === this.getFolderName(file) &&
+        (this.getRenameName(this.project.files[i]) != 'Need manual rename' ||
+          ((this.getRenameName(this.project.files[i]) == "" || this.getRenameName(this.project.files[i]) == "Need manual rename") &&
+            this.project.files[i].needManualRename &&
+            (this.project.files[i].mode == 2 || this.project.files[i].mode == 3) &&
+            ((this.getRenameName(file) == '' || this.getRenameName(file) == 'Need manual rename') &&
+              file.nameAfterRename == null))) &&
         this.project.files[i].renameIt) {
-        return this.project.files[i];
+        if (isCinema) {
+          const cinemaPrevious = this.isCinemaFormat(this.getRenameName(this.project.files[i]));
+          if (cinemaPrevious && this.isSamePlanSuffix(this.cinemaSplit(this.getRenameName(this.project.files[i]), cinemaPrevious.i), this.cinemaSplit(this.getRenameName(file), isCinema.i))) {
+            return this.project.files[i];
+          }
+        } else {
+          return this.project.files[i];
+        }
       }
       i--;
     }
     return null;
+  }
+
+  indexOfFile(file: FileFull) {
+    var i = 0;
+    for (const f of this.project.files) {
+      if (f.id == file.id) {
+        return i;
+      }
+      i++;
+    }
   }
 
   findPreviousSameFile(i): FileFull {
@@ -235,7 +258,6 @@ export class AnalyseFinishComponent implements OnInit, OnDestroy {
       const split = f.relativePath.split("/");
       filePath = this.getParam.GetParam('folderToAnalyse') + this.addExtension(split[split.length - 1], f.relativePath.replace(split[split.length - 1], f.finalName));
     }
-    console.log(filePath);
     this.renderer.send("open-directory", filePath);
     if (event != null) {
       event.stopPropagation();
@@ -360,13 +382,27 @@ export class AnalyseFinishComponent implements OnInit, OnDestroy {
     this.saveOrder();
   }
 
+  isSamePlanSuffix(cinemaSplit, cinemaSplitFile) {
+    console.log(cinemaSplitFile.scene + "==" + cinemaSplit.scene + "&&" + cinemaSplitFile.scenePrefix + "==" + cinemaSplit.scenePrefix + "&&" + cinemaSplitFile.sceneSuffix + "==" + cinemaSplit.sceneSuffix + "&&" +
+      cinemaSplitFile.plan + "==" + cinemaSplit.plan + "&&" + cinemaSplitFile.planPrefix + "==" + cinemaSplit.planPrefix + "&&" + cinemaSplitFile.planSuffix + "==" + cinemaSplit.planSuffix)
+    return cinemaSplitFile.scene == cinemaSplit.scene && cinemaSplitFile.scenePrefix == cinemaSplit.scenePrefix && cinemaSplitFile.sceneSuffix == cinemaSplit.sceneSuffix &&
+      cinemaSplitFile.plan == cinemaSplit.plan && cinemaSplitFile.planPrefix == cinemaSplit.planPrefix && cinemaSplitFile.planSuffix == cinemaSplit.planSuffix;
+  }
+
   nameByBefore(file: FileFull, i) {
     if (file.type == 2) return;
     file.needManualRename = false;
-    const previousFile = this.findPreviousValidFile(i, file);
+    file.previousIs = null;
+    if ((file.mode == 2 || file.mode == 3)) {
+      if (this.getRenameName(file) == '' || this.getRenameName(file) == 'Need manual rename') {
+        file.needManualRename = true;
+        return;
+      }
+    }
     const fileName = this.getRenameName(file);
     var isCinema = this.isCinemaFormat(fileName);
-    console.log(previousFile);
+    const previousFile = this.findPreviousValidFile(i, file, isCinema);
+    var isCinemaFormat = false;
     if (previousFile != null && (fileName == '' || fileName == 'Need manual rename' || file.isChild || isCinema)) {
       if (!isCinema) {
         file.isChild = true;
@@ -374,18 +410,23 @@ export class AnalyseFinishComponent implements OnInit, OnDestroy {
       const previousName = this.getRenameName(previousFile);
       const cinemaFormat = this.isCinemaFormat(previousName);
       if (cinemaFormat != null) {
+        isCinemaFormat = true;
         if (isCinema) {
           const cinemaSplitFile = this.cinemaSplit(fileName, isCinema.i);
           const cinemaSplit = this.cinemaSplit(previousName, cinemaFormat.i);
-          if (cinemaSplitFile.scene === cinemaSplit.scene && cinemaSplitFile.scenePrefix === cinemaSplit.scenePrefix && cinemaSplitFile.sceneSuffix === cinemaSplit.sceneSuffix &&
-            cinemaSplitFile.plan === cinemaSplit.plan && cinemaSplitFile.planPrefix === cinemaSplit.planPrefix && cinemaSplitFile.planSuffix === cinemaSplit.planSuffix &&
-            +cinemaSplit.prise >= +cinemaSplitFile.prise) {
-            cinemaSplit.prise = +cinemaSplit.prise + 1 + "";
-            file.customRename = this.getCinemaName(cinemaSplit);
+          if (this.isSamePlanSuffix(cinemaSplit, cinemaSplitFile)) {
+            file.previousIs = {
+              name: this.getCinemaName(cinemaSplit),
+              index: this.indexOfFile(previousFile)
+            }
+            if ((+cinemaSplit.prise >= +cinemaSplitFile.prise || +cinemaSplit.prise + 1 == +cinemaSplitFile.prise)) {
+              cinemaSplit.prise = "" + (+cinemaSplit.prise + 1);
+              file.customRename = this.getCinemaName(cinemaSplit);
+            }
           }
         } else {
           const cinemaSplit = this.cinemaSplit(previousName, cinemaFormat.i);
-          cinemaSplit.prise = +cinemaSplit.prise + 1 + "";
+          cinemaSplit.prise = "" + (+cinemaSplit.prise + 1);
           file.customRename = this.getCinemaName(cinemaSplit);
         }
       } else {
@@ -396,33 +437,36 @@ export class AnalyseFinishComponent implements OnInit, OnDestroy {
       file.isChild = false;
     }
     const previousSameFile = this.findPreviousSameFile(i);
-    if (previousSameFile != null && !isCinema) {
-      const previousName = this.getRenameName(previousSameFile);
-      const split = previousName.split("_");
-      var newName = this.getRenameName(previousSameFile, true);
-      if (split.length > 1 && !isNaN(+split[split.length - 1])) {
-        newName = newName + "_" + (+split[split.length - 1] + 1);
-      } else {
-        newName += "_1"
+    if (!isCinema && !isCinemaFormat) {
+      if (previousSameFile != null) {
+        const previousName = this.getRenameName(previousSameFile);
+        const split = previousName.split("_");
+        var newName = this.getRenameName(previousSameFile, true);
+        if (split.length > 1 && !isNaN(+split[split.length - 1])) {
+          newName = newName + "_" + (+split[split.length - 1] + 1);
+        } else {
+          newName += "_1"
+        }
+        file.customRename = newName;
+        file.wasDuplicate = true;
+        return;
+      } else if (file.wasDuplicate) {
+        file.wasDuplicate = false;
+        file.customRename = this.getRenameName(file, true);
       }
-      file.customRename = newName;
-      file.wasDuplicate = true;
-      return;
-    } else if (file.wasDuplicate) {
-      file.wasDuplicate = false;
-      file.customRename = this.getRenameName(file, true);
     }
-    file.needManualRename = this.getRenameName(file) == '' || file.mode == 2 || file.mode == 3;
+    file.needManualRename = this.getRenameName(file) == '';
   }
 
   getCinemaName(cinemaValue) {
     var addScene = +cinemaValue.scene <= 9 ? "0" : "";
     var addPlan = +cinemaValue.plan <= 9 ? "0" : "";
     var addPrise = +cinemaValue.prise <= 9 ? "0" : "";
-    return (cinemaValue.scenePrefix + addScene + cinemaValue.scene + cinemaValue.sceneSuffix +
+    const name = (cinemaValue.scenePrefix + addScene + cinemaValue.scene + cinemaValue.sceneSuffix +
       "_" + cinemaValue.planPrefix + addPlan + cinemaValue.plan + cinemaValue.planSuffix +
       "_" + cinemaValue.prisePrefix + addPrise + cinemaValue.prise + cinemaValue.priseSuffix).toUpperCase() +
       cinemaValue.suffix;
+    return name;
   }
 
   actionAllSelect(select: boolean) {
@@ -454,8 +498,8 @@ export class AnalyseFinishComponent implements OnInit, OnDestroy {
       /[0-9][0-9]|[_]|[0-9][0-9]|[A-Z]|[_]|[0-9][0-9]|[A-Z]/gi, //01_15A_16A
       /[0-9][0-9]|[A-Z]|[_]|[0-9][0-9]|[A-Z]|[_]|[0-9][0-9]/gi, //01E_15A_16
       /[0-9][0-9]|[A-Z]|[_]|[0-9][0-9]|[_]|[0-9][0-9]/gi, //01E_15_16
-      /[0-9][0-9]|[_]|[0-9][0-9]|[_]|[0-9][0-9]/gi, //01_15_16
       /[0-9][0-9]|[_]|[0-9][0-9]|[A-Z]|[_]|[0-9][0-9]/gi, //01_15A_16
+      /[0-9][0-9]|[_]|[0-9][0-9]|[_]|[0-9][0-9]/gi, //01_15_16
     ];
     const splitRegex = value.match(regexList[index]);
     var i = 0;
@@ -493,16 +537,12 @@ export class AnalyseFinishComponent implements OnInit, OnDestroy {
     i++;
     finalCinema.prise = +splitRegex[i] + "";
     i++;
-    console.log(value);
-    console.log(this.getCinemaName(finalCinema));
     const splitSuffix = value.split(this.getCinemaName(finalCinema));
     if (splitSuffix.length > 1 && splitSuffix[1].length == 1 && splitSuffix[1].match(/[A-Z]/)) {
       finalCinema.priseSuffix = splitRegex[i];
     } else if (splitSuffix.length > 1) {
-      console.log(splitSuffix);
       finalCinema.suffix = splitSuffix[1];
     }
-    console.log(finalCinema);
     return finalCinema;
   }
 
@@ -522,8 +562,8 @@ export class AnalyseFinishComponent implements OnInit, OnDestroy {
       /[0-9][0-9][_][0-9][0-9][A-Z][_][0-9][0-9][A-Z]/gi, //01_15A_16A
       /[0-9][0-9][A-Z][_][0-9][0-9][A-Z][_][0-9][0-9]/gi, //01E_15A_16
       /[0-9][0-9][A-Z][_][0-9][0-9][_][0-9][0-9]/gi, //01E_15_16
-      /[0-9][0-9][_][0-9][0-9][_][0-9][0-9]/gi, //01_15_16
       /[0-9][0-9][_][0-9][0-9][A-Z][_][0-9][0-9]/gi, //01_15A_16
+      /[0-9][0-9][_][0-9][0-9][_][0-9][0-9]/gi, //01_15_16
     ];
     var i = 0;
     for (const regex of regexList) {
@@ -730,6 +770,10 @@ export class AnalyseFinishComponent implements OnInit, OnDestroy {
     );
   }
 
+  previousQRLink(file, i) {
+    return file.previousIs && (i - 1) != file.previousIs.index ? " - Previous is " + file.previousIs.name : "";
+  }
+
   cancelAnalyze() {
     if (this.loading) return;
     const modalRef = this.modalService.open(ModalComponent);
@@ -762,10 +806,11 @@ export class AnalyseFinishComponent implements OnInit, OnDestroy {
     );
   }
 
-  styleQr(qri) {
+  styleQr(qri, file: FileFull) {
     return {
       width: "96px",
       height: "54px",
+      border: file.mode == 3 || file.mode == 1 ? "#3498db 5px solid" : "none",
       cursor: "pointer",
       "margin-left": qri == 2 ? "10px" : "0px"
     }
@@ -853,6 +898,7 @@ export class FileFull {
   needTmpName: boolean;
   stateAnim: string;
   mode: number;
+  previousIs: any;
 }
 
 export class ImageFull {

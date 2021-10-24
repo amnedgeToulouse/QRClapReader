@@ -45,6 +45,7 @@
                 <div class="flex-fill p-2 cursor-pointer white-indication-subtitle" (click)="renameCustomFile(file, i)">
                     <div *ngIf="file.type != 2 && file.renameIt">{{file.nameBeforeRename}} ->
                         <span>{{addExtension(file.nameBeforeRename, getRenameName(file))}}</span>
+                        <span style="font-size: 14px;">{{previousQRLink(file, i)}}</span>
                     </div>
                     <div *ngIf="(!file.nameAfterRename && file.type == 2) || !file.renameIt">
                         {{file.nameBeforeRename}}{{file.type == 2 ? " - Corrupt or Invalid, click and access to the
@@ -57,7 +58,7 @@
                     </div>
                 </div>
                 <img *ngFor="let qr of file.qrs; let qri=index;" [src]="qr.dataBase64"
-                    (click)="zoomImage(qr.dataBase64, i)" [style]="styleQr(qri)" />
+                    (click)="zoomImage(qr.dataBase64, i)" [style]="styleQr(qri, file)" />
             </div>
         </div>
     </div>
