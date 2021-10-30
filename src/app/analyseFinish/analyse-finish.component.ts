@@ -92,7 +92,7 @@ export class AnalyseFinishComponent implements OnInit, OnDestroy {
   }
 
   drop(event: CdkDragDrop<string[]>) {
-    if (event.previousIndex != event.currentIndex) {
+    if (event.previousIndex != event.currentIndex && this.getFolderName(this.project.files[event.previousIndex]) == this.getFolderName(this.project.files[event.currentIndex])) {
       this.project.files[event.previousIndex].stateAnim = "open";
       moveItemInArray(this.project.files, event.previousIndex, event.currentIndex);
       setTimeout(() => {
@@ -173,7 +173,7 @@ export class AnalyseFinishComponent implements OnInit, OnDestroy {
     return Utils.ConvertSecondToTimeLeft(file.duration);
   }
 
-  rowClass(file: FileFull) {
+  rowClass(file: FileFull, i: number) {
     if (!this.canBeShow(file)) return "d-none"
     var suffix = "row-valid";
     if (file.type == 2) {
@@ -383,10 +383,12 @@ export class AnalyseFinishComponent implements OnInit, OnDestroy {
   }
 
   isSamePlanSuffix(cinemaSplit, cinemaSplitFile) {
-    console.log(cinemaSplitFile.scene + "==" + cinemaSplit.scene + "&&" + cinemaSplitFile.scenePrefix + "==" + cinemaSplit.scenePrefix + "&&" + cinemaSplitFile.sceneSuffix + "==" + cinemaSplit.sceneSuffix + "&&" +
-      cinemaSplitFile.plan + "==" + cinemaSplit.plan + "&&" + cinemaSplitFile.planPrefix + "==" + cinemaSplit.planPrefix + "&&" + cinemaSplitFile.planSuffix + "==" + cinemaSplit.planSuffix)
     return cinemaSplitFile.scene == cinemaSplit.scene && cinemaSplitFile.scenePrefix == cinemaSplit.scenePrefix && cinemaSplitFile.sceneSuffix == cinemaSplit.sceneSuffix &&
       cinemaSplitFile.plan == cinemaSplit.plan && cinemaSplitFile.planPrefix == cinemaSplit.planPrefix && cinemaSplitFile.planSuffix == cinemaSplit.planSuffix;
+  }
+
+  beforeIsDifferentFolder(file: FileFull, i: number) {
+    return i == 0 || this.getFolderName(file) != this.getFolderName(this.project.files[i - 1]);
   }
 
   nameByBefore(file: FileFull, i) {
@@ -413,21 +415,33 @@ export class AnalyseFinishComponent implements OnInit, OnDestroy {
         isCinemaFormat = true;
         if (isCinema) {
           const cinemaSplitFile = this.cinemaSplit(fileName, isCinema.i);
-          const cinemaSplit = this.cinemaSplit(previousName, cinemaFormat.i);
-          if (this.isSamePlanSuffix(cinemaSplit, cinemaSplitFile)) {
+          const cinemaSplitBefore = this.cinemaSplit(previousName, cinemaFormat.i);
+          if (this.isSamePlanSuffix(cinemaSplitBefore, cinemaSplitFile)) {
             file.previousIs = {
-              name: this.getCinemaName(cinemaSplit),
+              name: this.getCinemaName(cinemaSplitBefore),
               index: this.indexOfFile(previousFile)
             }
-            if ((+cinemaSplit.prise >= +cinemaSplitFile.prise || +cinemaSplit.prise + 1 == +cinemaSplitFile.prise)) {
-              cinemaSplit.prise = "" + (+cinemaSplit.prise + 1);
-              file.customRename = this.getCinemaName(cinemaSplit);
+            var renameIncrement = false;
+            if (file.renameByHand == 0) {
+              var isCinemaFileBase = this.isCinemaFormat(file.nameAfterRename);
+              if (isCinemaFileBase) {
+                const cinemaSplitFileBase = this.cinemaSplit(file.nameAfterRename, isCinemaFileBase.i);
+                if (cinemaSplitFileBase && this.isSamePlanSuffix(cinemaSplitBefore, cinemaSplitFileBase) && (+cinemaSplitBefore.prise >= +cinemaSplitFileBase.prise || +cinemaSplitBefore.prise + 1 == +cinemaSplitFileBase.prise)) {
+                  renameIncrement = true;
+                }
+              }
+            }
+            if (renameIncrement || (+cinemaSplitBefore.prise >= +cinemaSplitFile.prise || +cinemaSplitBefore.prise + 1 == +cinemaSplitFile.prise)) {
+              cinemaSplitBefore.prise = "" + (+cinemaSplitBefore.prise + 1);
+              file.customRename = this.getCinemaName(cinemaSplitBefore);
+              file.renameByHand = 0;
             }
           }
         } else {
           const cinemaSplit = this.cinemaSplit(previousName, cinemaFormat.i);
           cinemaSplit.prise = "" + (+cinemaSplit.prise + 1);
           file.customRename = this.getCinemaName(cinemaSplit);
+          file.renameByHand = 0;
         }
       } else {
         file.customRename = this.getRenameName(previousFile, true);
@@ -634,6 +648,7 @@ export class AnalyseFinishComponent implements OnInit, OnDestroy {
         }).then((projectQrData: ProjectQrData) => {
           for (const qrMiss of projectQrData.qrData) {
             for (const file of this.project.files) {
+              if (file.renameByHand == null) file.renameByHand = 0;
               for (const qr of file.qrs) {
                 if (qr.id == qrMiss.id) {
                   qr.dataBase64 = "data:image/jpg;base64," + qrMiss.dataBase64;
@@ -899,6 +914,7 @@ export class FileFull {
   stateAnim: string;
   mode: number;
   previousIs: any;
+  renameByHand: number;
 }
 
 export class ImageFull {
