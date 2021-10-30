@@ -385,6 +385,7 @@ var sendQRToAnalyse = (event) => {
             createdDate: elem.createdDate,
             duration: typeof elem.duration == "undefined" ? 0 : elem.duration,
             type: elem.images.length == 0 ? 2 : 0,
+            renameByHand: 0,
             nameBeforeRename: splitName[splitName.length - 1]
         });
     }

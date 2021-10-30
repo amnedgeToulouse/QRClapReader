@@ -30,35 +30,42 @@
                 (click)="actionActivateReorder()">{{textActivateReorder()}}</button>
         </div>
         <div cdkDropList class="drag-list overflow-auto h-100" (cdkDropListDropped)="drop($event)" style="width:1250px">
-            <div cdkDrag [cdkDragDisabled]="!activateReorder || file.type == 2" [@openClose]="file.stateAnim"
-                [class]="rowClass(file)" *ngFor="let file of project.files; let i=index;">
-                <div *ngIf="file.type != 2 && project.state != 1 ">
-                    <label *ngIf="!activateReorder" class="position-relative cursor-pointer align-items-center"
-                        style="width: 40px;height: 70px;margin-top: 8px;" [for]="file.relativePath">
-                        <input type="checkbox" [id]="file.relativePath" style="margin-top: 30px; margin-left: 17px;"
-                            (change)="saveFileStatus()" [(ngModel)]="file.renameIt">
-                    </label>
-                    <div class="p-3" *ngIf="activateReorder" style="color: white;">
-                        <fa-icon [icon]="faBars"></fa-icon>
-                    </div>
+            <div *ngFor="let file of project.files; let i=index;">
+                <div *ngIf="beforeIsDifferentFolder(file, i)" class="text-center"
+                    style="width: 1225px;height: 80px;position: relative;">
+                    <span class="title-text">{{getFolderName(file)}}</span>
                 </div>
-                <div class="flex-fill p-2 cursor-pointer white-indication-subtitle" (click)="renameCustomFile(file, i)">
-                    <div *ngIf="file.type != 2 && file.renameIt">{{file.nameBeforeRename}} ->
-                        <span>{{addExtension(file.nameBeforeRename, getRenameName(file))}}</span>
-                        <span style="font-size: 14px;">{{previousQRLink(file, i)}}</span>
+                <div cdkDrag [cdkDragDisabled]="!activateReorder || file.type == 2" [@openClose]="file.stateAnim"
+                    [class]="rowClass(file, i)">
+                    <div *ngIf="file.type != 2 && project.state != 1 ">
+                        <label *ngIf="!activateReorder" class="position-relative cursor-pointer align-items-center"
+                            style="width: 40px;height: 70px;margin-top: 8px;" [for]="file.relativePath">
+                            <input type="checkbox" [id]="file.relativePath" style="margin-top: 30px; margin-left: 17px;"
+                                (change)="saveFileStatus()" [(ngModel)]="file.renameIt">
+                        </label>
+                        <div class="p-3" *ngIf="activateReorder" style="color: white;">
+                            <fa-icon [icon]="faBars"></fa-icon>
+                        </div>
                     </div>
-                    <div *ngIf="(!file.nameAfterRename && file.type == 2) || !file.renameIt">
-                        {{file.nameBeforeRename}}{{file.type == 2 ? " - Corrupt or Invalid, click and access to the
-                        file" : ""}}</div>
-                    <div *ngIf="file.duration != 0">
-                        <fa-icon [icon]="faClock"></fa-icon><span class="clock-time">
-                            {{formatDuration(file)}}</span>&nbsp;&nbsp;<fa-icon (click)="openDirectory(file, $event)"
-                            class="cursor-pointer" [icon]="faFolderOpen"></fa-icon>&nbsp;<span
-                            class="clock-time">{{getFolderName(file)}}</span>
+                    <div class="flex-fill p-2 cursor-pointer white-indication-subtitle"
+                        (click)="renameCustomFile(file, i)">
+                        <div *ngIf="file.type != 2 && file.renameIt">{{file.nameBeforeRename}} ->
+                            <span>{{addExtension(file.nameBeforeRename, getRenameName(file))}}</span>
+                            <span style="font-size: 14px;">{{previousQRLink(file, i)}}</span>
+                        </div>
+                        <div *ngIf="(!file.nameAfterRename && file.type == 2) || !file.renameIt">
+                            {{file.nameBeforeRename}}{{file.type == 2 ? " - Corrupt or Invalid, click and access to the
+                            file" : ""}}</div>
+                        <div *ngIf="file.duration != 0">
+                            <fa-icon [icon]="faClock"></fa-icon><span class="clock-time">
+                                {{formatDuration(file)}}</span>&nbsp;&nbsp;<fa-icon
+                                (click)="openDirectory(file, $event)" class="cursor-pointer" [icon]="faFolderOpen">
+                            </fa-icon>&nbsp;<span class="clock-time">{{getFolderName(file)}}</span>
+                        </div>
                     </div>
+                    <img *ngFor="let qr of file.qrs; let qri=index;" [src]="qr.dataBase64"
+                        (click)="zoomImage(qr.dataBase64, i)" [style]="styleQr(qri, file)" />
                 </div>
-                <img *ngFor="let qr of file.qrs; let qri=index;" [src]="qr.dataBase64"
-                    (click)="zoomImage(qr.dataBase64, i)" [style]="styleQr(qri, file)" />
             </div>
         </div>
     </div>

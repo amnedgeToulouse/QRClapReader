@@ -104,6 +104,7 @@ export class ModalRenameComponent implements OnInit {
     } else {
       this.parent.project.files[this.i].customRename = this.isCinema ? this.parent.getCinemaName(this.cinemaValue) : this.customRename;
       this.parent.project.files[this.i].isChild = false;
+      this.parent.project.files[this.i].renameByHand = 1;
       this.activeModal.dismiss('confirm');
     }
   }
@@ -114,6 +115,7 @@ export class ModalRenameComponent implements OnInit {
 
   revert() {
     this.parent.project.files[this.i].customRename = this.parent.project.files[this.i].finalName != null ? this.parent.project.files[this.i].finalName : "";
+    this.parent.project.files[this.i].renameByHand = 0;
     this.activeModal.dismiss('confirm');
   }
 
