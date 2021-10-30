@@ -1,11 +1,21 @@
 {
   "build": {
+    "afterSign": "scripts/notarize.js",
     "appId": "qrclap.reader",
     "productName": "QRClap Reader",
+    "dmg": {
+      "sign": false
+    },
     "win": {
       "target": [
         "nsis"
       ]
+    },
+    "mac": {
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false,
+      "entitlements": "build/entitlements.mac.plist",
+      "entitlementsInherit": "build/entitlements.mac.plist"
     },
     "nsis": {
       "deleteAppDataOnUninstall": true,
@@ -48,7 +58,7 @@
     ]
   },
   "name": "QRClapReader",
-  "version": "1.0.20",
+  "version": "1.0.22",
   "description": "QRClap Reader allow you to read QR generated from QRClap generator mobile app",
   "homepage": "https://qrclap.com",
   "author": {
@@ -160,6 +170,7 @@
     "cross-env": "7.0.3",
     "electron": "12.0.2",
     "electron-builder": "22.10.5",
+    "electron-notarize": "1.1.1",
     "electron-reload": "1.5.0",
     "eslint": "7.22.0",
     "eslint-plugin-import": "2.22.1",
