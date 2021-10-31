@@ -92,7 +92,21 @@ export class AnalyseFinishComponent implements OnInit, OnDestroy {
   }
 
   drop(event: CdkDragDrop<string[]>) {
-    if (event.previousIndex != event.currentIndex && this.getFolderName(this.project.files[event.previousIndex]) == this.getFolderName(this.project.files[event.currentIndex])) {
+    if (this.getFolderName(this.project.files[event.previousIndex]) != this.getFolderName(this.project.files[event.currentIndex])) {
+      const modalRef = this.modalService.open(ModalComponent);
+      modalRef.componentInstance.title = "Warning";
+      modalRef.componentInstance.message = "You can't move file to another folder, you can do it manualy and re-process analyse by deleting it first.";
+      modalRef.componentInstance.actionButtonType = 0;
+      modalRef.componentInstance.canConfirm = false;
+      modalRef.componentInstance.actionCancelButtonMessage = "Understand";
+      modalRef.componentInstance.cancelButtonType = 2;
+      modalRef.result.then(
+        result => { },
+        reason => { }
+      );
+      return;
+    }
+    if (event.previousIndex != event.currentIndex) {
       this.project.files[event.previousIndex].stateAnim = "open";
       moveItemInArray(this.project.files, event.previousIndex, event.currentIndex);
       setTimeout(() => {
@@ -413,7 +427,7 @@ export class AnalyseFinishComponent implements OnInit, OnDestroy {
       const cinemaFormat = this.isCinemaFormat(previousName);
       if (cinemaFormat != null) {
         isCinemaFormat = true;
-        if (isCinema) {
+        if (isCinema && !file.isChild) {
           const cinemaSplitFile = this.cinemaSplit(fileName, isCinema.i);
           const cinemaSplitBefore = this.cinemaSplit(previousName, cinemaFormat.i);
           if (this.isSamePlanSuffix(cinemaSplitBefore, cinemaSplitFile)) {
