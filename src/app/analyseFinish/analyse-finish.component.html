@@ -10,12 +10,12 @@
         </div>
         <div class="white-indication-subtitle">List of file which has been found by analyse, green = QR found, orange =
             No QR found, red = Corrupt or invalid file, grey = Disable</div>
-        <div class="form-check form-check-inline p-1">
+        <!-- <div class="form-check form-check-inline p-1">
             <button type="button" [class]="classActive(showFalseTake)"
                 (click)="actionShowFalseTake()">{{textShowFalseTake()}}</button>
             <button type="button" [class]="classActive(showAutoTakeRename)"
                 (click)="actionShowAutoTakeRename()">{{textShowAutoTakeRename()}}</button>
-        </div>
+        </div> -->
         <!-- <div class="white-indication-subtitle"><a class="cursor-pointer yellow-text" (click)="actionShowFalseTake()">{{textShowFalseTake()}}</a> / <a class="cursor-pointer yellow-text" (click)="actionShowAutoTakeRename()">{{textShowAutoTakeRename()}}</a></div> -->
         <div class="white-indication-subtitle p-1 d-flex flex-row" *ngIf="project.state != 1">
             <button type="button" class="btn btn-outline-warning" (click)="actionAllSelect(true)">Select all</button>
@@ -24,10 +24,10 @@
                 <input [(ngModel)]="filterName" (keyup)="updateFilter()" (cut)="updateFilter()" (past)="updateFilter()"
                     class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
             </div>
-            <button type="button" class="btn btn-outline-warning" (click)="restoreByDateOrder()">Restore initial file
-                order</button>
             <button type="button" [class]="classActive(activateReorder)"
                 (click)="actionActivateReorder()">{{textActivateReorder()}}</button>
+            <button type="button" class="btn btn-outline-warning" (click)="restoreByDateOrder()">Restore initial file
+                order</button>
         </div>
         <div cdkDropList class="drag-list overflow-auto h-100" (cdkDropListDropped)="drop($event)" style="width:1250px">
             <div *ngFor="let file of project.files; let i=index;">
@@ -63,8 +63,10 @@
                             </fa-icon>&nbsp;<span class="clock-time">{{getFolderName(file)}}</span>
                         </div>
                     </div>
-                    <img *ngFor="let qr of file.qrs; let qri=index;" [src]="qr.dataBase64"
-                        (click)="zoomImage(qr.dataBase64, i)" [style]="styleQr(qri, file)" />
+                    <div [style]="styleQrContainer(file)" class="p-2">
+                        <img *ngFor="let qr of file.qrs; let qri=index;" [src]="qr.dataBase64"
+                            (click)="zoomImage(qr.dataBase64, i)" [style]="styleQr(qri)" />
+                    </div>
                 </div>
             </div>
         </div>

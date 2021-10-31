@@ -835,11 +835,17 @@ export class AnalyseFinishComponent implements OnInit, OnDestroy {
     );
   }
 
-  styleQr(qri, file: FileFull) {
+  styleQrContainer(file: FileFull) {
+    return {
+      height: "70px",
+      'background-color': file.mode == 3 || file.mode == 1 ? "#3498db" : "none"
+    }
+  }
+
+  styleQr(qri) {
     return {
       width: "96px",
       height: "54px",
-      border: file.mode == 3 || file.mode == 1 ? "#3498db 5px solid" : "none",
       cursor: "pointer",
       "margin-left": qri == 2 ? "10px" : "0px"
     }
