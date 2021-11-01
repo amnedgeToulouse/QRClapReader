@@ -1,16 +1,15 @@
 <div class="modal-header">
   <h4 class="modal-title">{{title}}</h4>
   <button *ngIf="!removeClose" type="button" class="close" data-dismiss="modal" aria-hidden="true"
-      (click)="close()">&times;</button>
+    (click)="close()">&times;</button>
 </div>
 <div class="modal-body">
   <div *ngIf="imageToPrint == ''">
     <div *ngIf="isCreateProject">
       <label class="form-control-label" for="field_project_name">Project Name</label>
-      <input required type="text" class="form-control" name="nom" id="field_project_name"
-          [(ngModel)]="projectName" />
+      <input required type="text" class="form-control" name="nom" id="field_project_name" [(ngModel)]="projectName" />
     </div>
-    <div *ngIf="!isCreateProject">
+    <div *ngIf="!isCreateProject" [class]="classMessage()">
       {{message}}
     </div>
   </div>
@@ -18,16 +17,17 @@
 <div class="modal-footer">
   <div class="flex-fill">
     <button *ngIf="imageToPrint != ''" (click)="zoomAction()" type="button" class="btn btn-primary">
-        <span>{{zoomText()}}</span>
+      <span>{{zoomText()}}</span>
     </button>
   </div>
   <button (click)="cancel()" type="button" [class]="classButtonCancel()">
-      <span>{{actionCancelButtonMessage}}</span>
+    <span>{{actionCancelButtonMessage}}</span>
   </button>
   <button *ngIf="canSecondAction" (click)="secondConfirm()" type="button" [class]="classSecondButtonAction()">
-      <span>{{actionSecondButtonMessage}}</span>
+    <span>{{actionSecondButtonMessage}}</span>
   </button>
-  <button *ngIf="canConfirm" (click)="confirm()" [disabled]="projectName=='' && isCreateProject" type="button" [class]="classButtonAction()">
-      <span>{{actionButtonMessage}}</span>
+  <button *ngIf="canConfirm" (click)="confirm()" [disabled]="projectName=='' && isCreateProject" type="button"
+    [class]="classButtonAction()">
+    <span>{{actionButtonMessage}}</span>
   </button>
 </div>

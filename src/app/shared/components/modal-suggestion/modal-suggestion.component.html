@@ -1,18 +1,19 @@
 <div class="modal-header">
-  <h4 class="modal-title">Send Suggestion</h4>
-  <button type="button" class="close" data-dismiss="modal" aria-hidden="true"
-      (click)="close()">&times;</button>
+  <h4 class="modal-title">Send Suggestions</h4>
+  <button type="button" class="close" data-dismiss="modal" aria-hidden="true" (click)="close()">&times;</button>
 </div>
 <div class="modal-body" (keyup.enter)="send()">
   <div class="form-group">
     <label for="exampleInputEmail1">Email</label>
-    <input [(ngModel)]="mail" type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
-    <small id="emailHelp" class="form-text text-muted">With your email we can answer, you can send bugs, idea or whatever we will read it. (FR/EN)</small>
+    <input [(ngModel)]="mail" type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp"
+      placeholder="Enter email">
+    <small id="emailHelp" class="form-text text-muted">Please write your e-mail so we can answer your questions or any
+      ideas. You can also report bugs here. ( FR/EN)</small>
     <textarea [(ngModel)]="suggestionText" class="form-control" id="exampleFormControlTextarea1" rows="5"></textarea>
   </div>
 </div>
 <div class="modal-footer">
   <button (click)="send()" [disabled]="!validateForm() && !loading" type="button" class="btn btn-primary">
-      <span>Send</span>
+    <span>Send</span>
   </button>
 </div>

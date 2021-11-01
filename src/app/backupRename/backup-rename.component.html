@@ -1,16 +1,19 @@
 <div class="background-base p-3">
     <h1 class="title-text"><span class="yellow-text">R</span>ename Backup</h1>
-    <div class="white-indication-subtitle">Rename backup is the last step, when you renamed the project you can rename the multiple backup you did in past few days.</div>
+    <div class="white-indication-subtitle">Renaming back-ups is the last step. When you've renamed the project you can
+        rename the multiple back-ups you did in the past few days.</div>
     <div class="flex-row d-flex">
         <div class="flex-column d-flex w-50">
             <div class="flex-row align-items-center d-flex w-100">
-                <div class="white-indication-title p-2 flex-fill"><span class="yellow-text">S</span>ource {{getFileRenamed().length}} files renamed</div>
+                <div class="white-indication-title p-2 flex-fill"><span class="yellow-text">S</span>ource
+                    {{getFileRenamed().length}} files renamed</div>
             </div>
             <div class="flex-column d-flex w-100 overflow-auto user-select-none" style="max-height: 350px;">
                 <mat-card *ngFor="let file of getFileRenamed();" class="mb-1">
                     <span class="black-indication-subtitle">{{file.nameBeforeRename}}</span>
                     <span class="black-indication-subtitle ml-2 mr-2">-></span>
-                    <span class="black-indication-subtitle">{{addExtension(file.nameBeforeRename, file.finalName)}}</span>
+                    <span class="black-indication-subtitle">{{addExtension(file.nameBeforeRename,
+                        file.finalName)}}</span>
                 </mat-card>
             </div>
         </div>
@@ -18,24 +21,41 @@
             <div class="white-indication-title p-2"><span class="yellow-text">D</span>estinations</div>
             <div class="flex-column d-flex w-100 overflow-auto" style="max-height: 350px;">
                 <div class="flex-column d-flex flex-fill p-2" *ngFor="let destination of destinations; let i=index;">
-                    <div class="white-indication-subtitle p-2" style="overflow: hidden;"><fa-icon *ngIf="destination.destination!=''" [icon]="faSave" class="mr-2"></fa-icon>{{destination.destination}}</div>
-                    <div class="green-indication-subtitle p-2" *ngIf="destination.destination!='' && destination.missingFiles==0 && destination.alreadyRename != destination.total">All files match with project, ready for rename!</div>
-                    <div class="yellow-indication-subtitle p-2" *ngIf="destination.destination!='' && destination.alreadyRename == destination.total">This folder is already renamed</div>
-                    <div class="white-indication-subtitle p-2" *ngIf="destination.destination!='' && destination.missingFiles!=0 && destination.alreadyRename != destination.total">
+                    <div class="white-indication-subtitle p-2" style="overflow: hidden;">
+                        <fa-icon *ngIf="destination.destination!=''" [icon]="faSave" class="mr-2"></fa-icon>
+                        {{destination.destination}}
+                    </div>
+                    <div class="green-indication-subtitle p-2"
+                        *ngIf="destination.destination!='' && destination.missingFiles==0 && destination.alreadyRename != destination.total">
+                        All files match with project, ready for rename!</div>
+                    <div class="yellow-indication-subtitle p-2"
+                        *ngIf="destination.destination!='' && destination.alreadyRename == destination.total">This
+                        folder is already renamed</div>
+                    <div class="white-indication-subtitle p-2"
+                        *ngIf="destination.destination!='' && destination.missingFiles!=0 && destination.alreadyRename != destination.total">
                         <span class="red-text mr-3">Missing: {{destination.missingFiles}}</span>
                         <span class="success-text mr-3">Matching: {{destination.matching}}</span>
                         <span class="yellow-text mr-3">Renamed: {{destination.alreadyRename}}</span>
                         Total: {{destination.total}}
-                        <button type="button" class="btn btn-primary ml-2" (click)="detailsFolder(i)" style="width: 47px;font-weight: bold;border-radius: 50%;font-size: 22px;"><fa-icon [icon]="faList"></fa-icon></button>
+                        <button type="button" class="btn btn-primary ml-2" (click)="detailsFolder(i)"
+                            style="width: 47px;font-weight: bold;border-radius: 50%;font-size: 22px;">
+                            <fa-icon [icon]="faList"></fa-icon>
+                        </button>
                     </div>
                     <div class="flex-row d-flex flex-fill">
                         <div class="button-action-simple" (click)="selectFolder(i)">{{getTextFolder(i)}}</div>
-                        <button type="button" class="btn btn-danger ml-2" *ngIf="i>0" (click)="removeDestination(i)" style="width: 47px;font-weight: bold;border-radius: 50%;font-size: 22px;"><fa-icon [icon]="faFolderMinus"></fa-icon></button>
+                        <button type="button" class="btn btn-danger ml-2" *ngIf="i>0" (click)="removeDestination(i)"
+                            style="width: 47px;font-weight: bold;border-radius: 50%;font-size: 22px;">
+                            <fa-icon [icon]="faFolderMinus"></fa-icon>
+                        </button>
                     </div>
                 </div>
             </div>
             <div class="flex-fill p-2">
-                <button type="button" class="btn btn-success" (click)="addDestination()" style="width: 47px;font-weight: bold;border-radius: 50%;font-size: 22px;margin-top: 14px;"><fa-icon [icon]="faFolderPlus"></fa-icon></button>
+                <button type="button" class="btn btn-success" (click)="addDestination()"
+                    style="width: 47px;font-weight: bold;border-radius: 50%;font-size: 22px;margin-top: 14px;">
+                    <fa-icon [icon]="faFolderPlus"></fa-icon>
+                </button>
             </div>
         </div>
     </div>

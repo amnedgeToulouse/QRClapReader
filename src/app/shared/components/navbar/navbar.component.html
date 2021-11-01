@@ -1,11 +1,12 @@
 <nav class="navbar navbar-light bg-white position-fixed w-100" style="z-index: 100" *ngIf="isValidRoute()">
   <div class="d-flex flex-row align-items-center justify-content-center w-100" style="max-width: 1236px">
-    <div style="width: 75px">
-      <img [src]="getLogo()" width="60" height="60" alt="" />
+    <div style="width: 123px;margin-top: -15px;">
+      <img [src]="getLogo()" width="121" height="51" alt="" />
     </div>
-    <div class="p-2" style="width: 300px">
-      <span class="grey-indication-title">QR</span><span class="yellow-indication-title">C READER</span><span
-        class="grey-indication-title"> {{ version }}</span>
+    <div class="p-2" style="width: 100px">
+      <!-- <span class="grey-indication-title">QR</span><span class="yellow-indication-title">C READER</span> -->
+      <span class="grey-indication-title"> {{ getVersion()[0] }}<span class="yellow-indication-title">.</span>{{
+        getVersion()[1] }}<span class="yellow-indication-title">.</span>{{ getVersion()[2] }}</span>
     </div>
     <div *ngIf="getQrConsumption()" class="p-2" style="width: 310px; margin-top: 5px">
       <span class="black-indication-text">QR Stock: </span>
@@ -20,7 +21,7 @@
     </div>
     <div class="p-2">
       <button (click)="suggestion()" type="button" class="btn btn-success">
-        Suggestion
+        Send Suggestions
       </button>
     </div>
     <div class="p-2" *ngIf="isValidBackToProjectRoute()">

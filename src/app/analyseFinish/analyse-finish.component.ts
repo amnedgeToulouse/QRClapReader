@@ -370,7 +370,7 @@ export class AnalyseFinishComponent implements OnInit, OnDestroy {
   restoreByDateOrder() {
     const modalRef = this.modalService.open(ModalComponent);
     modalRef.componentInstance.title = "Restore initial file order";
-    modalRef.componentInstance.message = "Are you sure to restore initial file order of all file ?";
+    modalRef.componentInstance.message = "Are you sure you want to restore the initial order of all files ? ";
     modalRef.componentInstance.actionButtonMessage = "Restore order";
     modalRef.componentInstance.actionButtonType = 0;
     modalRef.componentInstance.actionCancelButtonMessage = "No";
@@ -721,11 +721,11 @@ export class AnalyseFinishComponent implements OnInit, OnDestroy {
     console.log(projectClone);
     const modalRef = this.modalService.open(ModalComponent);
     modalRef.componentInstance.title = "Rename files";
-    modalRef.componentInstance.message = "Are you sure to rename " + nbRename + " files ? ";
+    modalRef.componentInstance.message = "Are you sure you want to rename " + nbRename + " files ? ";
     if (NavBarComponent.NAV_BAR.getQrConsumption().id != null) {
-      modalRef.componentInstance.message += "It will consume " + nbRename + " QR stock of your monthly " + NavBarComponent.NAV_BAR.getQrConsumption().maxQuantity + " QR stock.";
+      modalRef.componentInstance.message += "It will use " + nbRename + " QR stock of your monthly " + NavBarComponent.NAV_BAR.getQrConsumption().maxQuantity + " QR stock.";
     } else {
-      modalRef.componentInstance.message += "It will not consume your monthly " + NavBarComponent.NAV_BAR.getQrConsumption().maxQuantity + " QR stock, because you are in test mode.";
+      modalRef.componentInstance.message += "t will not use your monthly " + NavBarComponent.NAV_BAR.getQrConsumption().maxQuantity + " QR stock because you are in test mode.";
     }
     modalRef.componentInstance.actionButtonMessage = "Rename files";
     modalRef.componentInstance.actionButtonType = 0;
@@ -806,9 +806,9 @@ export class AnalyseFinishComponent implements OnInit, OnDestroy {
   cancelAnalyze() {
     if (this.loading) return;
     const modalRef = this.modalService.open(ModalComponent);
-    modalRef.componentInstance.title = "Delete Analyse";
-    modalRef.componentInstance.message = "Are you sure to delete analyse in progress ?";
-    modalRef.componentInstance.actionButtonMessage = "Delete Analyse";
+    modalRef.componentInstance.title = "Delete Analysis";
+    modalRef.componentInstance.message = "Are you sure you want to delete the analysis in progress ? ";
+    modalRef.componentInstance.actionButtonMessage = "Delete Analysis";
     modalRef.componentInstance.actionButtonType = 1;
     modalRef.componentInstance.actionCancelButtonMessage = "No";
     modalRef.result.then(
@@ -857,7 +857,7 @@ export class AnalyseFinishComponent implements OnInit, OnDestroy {
 
   activateReorder = false;
   textActivateReorder() {
-    return !this.activateReorder ? "Activate reorder" : "Deactivate reorder";
+    return !this.activateReorder ? "Activate manual re-classification" : "Deactivate manual re-classification";
   }
 
   actionActivateReorder() {

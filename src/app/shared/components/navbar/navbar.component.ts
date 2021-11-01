@@ -73,6 +73,10 @@ export class NavBarComponent implements OnInit {
     }, 1000);
   }
 
+  getVersion() {
+    return this.version.split('.');
+  }
+
   getLogo() {
     return Constant.LOGO;
   }
@@ -154,7 +158,7 @@ export class NavBarComponent implements OnInit {
   leaveProject() {
     const modalRef = this.modalService.open(ModalComponent);
     modalRef.componentInstance.title = this.isBackup() ? "Leave backup" : "Leave the project";
-    modalRef.componentInstance.message = this.isBackup() ? "Are you sure to leave the backup ?" : "Are you sure to leave the project " + this.getProjectName() + " ?";
+    modalRef.componentInstance.message = this.isBackup() ? "Are you sure you want to leave the backup ?" : "Are you sure you want to leave the project " + this.getProjectName() + " ?";
     modalRef.componentInstance.actionButtonMessage = "Leave it";
     modalRef.componentInstance.actionButtonType = 1;
     modalRef.componentInstance.actionCancelButtonMessage = "No";

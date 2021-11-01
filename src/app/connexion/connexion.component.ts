@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { IpcRenderer } from 'electron';
 import { ElectronService } from 'ngx-electron';
+import { Constant } from '../constant';
 import { NavBarComponent } from '../shared/components/navbar/navbar.component';
 import { ArgAppService } from '../shared/service/arg-app.service';
 import { HttpRequestService } from '../shared/service/http-request.service';
@@ -26,6 +27,10 @@ export class ConnexionComponent implements OnInit {
     private argApp: ArgAppService,
     private saveParam: SaveParamService) {
     this.renderer = electronServiceInstance.ipcRenderer;
+  }
+
+  getLogo() {
+    return Constant.LOGO_WHITE;
   }
 
   ngOnInit(): void {

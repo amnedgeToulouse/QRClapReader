@@ -105,10 +105,11 @@ export class ProjectSelectedComponent implements OnInit {
         const folderAnalyze = this.saveParam.GetProjectFolder(this.idProject);
         if (folderAnalyze != "") {
           const modalRef = this.modalService.open(ModalComponent);
-          modalRef.componentInstance.title = "Reopen previous folder";
-          modalRef.componentInstance.message = "The last time you open this project with the folder : " + folderAnalyze;
+          modalRef.componentInstance.title = "Re-open previous folder";
+          modalRef.componentInstance.message = "Last time you logged in the project was opened with the folder: " + folderAnalyze;
           modalRef.componentInstance.actionButtonMessage = "Reopen this folder";
           modalRef.componentInstance.actionButtonType = 0;
+          modalRef.componentInstance.centerText = true;
           modalRef.componentInstance.actionCancelButtonMessage = "Another";
           modalRef.result.then(
             result => { },

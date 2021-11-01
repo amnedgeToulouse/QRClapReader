@@ -17,6 +17,7 @@ export class ModalComponent implements OnInit {
   actionButtonType = 0;
   cancelButtonType = 0;
   secondButtonType = 0;
+  centerText = false;
   canConfirm = true;
   canSecondAction = false;
   imageToPrint = "";
@@ -31,6 +32,10 @@ export class ModalComponent implements OnInit {
 
   ngOnInit() {
 
+  }
+
+  classMessage() {
+    return this.centerText ? "text-center" : "";
   }
 
   secondConfirm() {

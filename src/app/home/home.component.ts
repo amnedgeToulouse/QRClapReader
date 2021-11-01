@@ -126,7 +126,7 @@ export class HomeComponent implements OnInit {
   getStateProject(p: Project) {
     switch (p.state) {
       case 0:
-        return "Analysing"
+        return "Analyzing"
       case 1:
         return "Renamed"
       case 2:
@@ -184,11 +184,11 @@ export class HomeComponent implements OnInit {
     const modalRef = this.modalService.open(ModalComponent);
     modalRef.componentInstance.title = "Project action";
     if (project.state == 1) {
-      modalRef.componentInstance.message = 'You can open or archive the project "' + project.name + '"';
+      modalRef.componentInstance.message = 'Do you want to open or archive the project "' + project.name + '"';
     } else if (project.state == 0) {
-      modalRef.componentInstance.message = 'You can open or delete the project "' + project.name + '"';
+      modalRef.componentInstance.message = 'Do you want to open or delete the project "' + project.name + '"';
     } else if (project.state == 2) {
-      modalRef.componentInstance.message = 'You can restore the project "' + project.name + '"';
+      modalRef.componentInstance.message = 'Do you want to restore the project "' + project.name + '"';
     }
     modalRef.componentInstance.actionButtonMessage = "Open project"
     modalRef.componentInstance.actionButtonType = 0;
