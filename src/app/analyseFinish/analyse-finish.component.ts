@@ -156,7 +156,9 @@ export class AnalyseFinishComponent implements OnInit, OnDestroy {
     if (withoutDupli) {
       const split = toReturn.split("_");
       if (split.length > 1 && !isNaN(+split[split.length - 1])) { // && !toReturn.match(/[0-9][0-9][_][0-9][0-9][_][0-9][0-9]/gi)
-        toReturn = toReturn.replace("_" + split[split.length - 1], "");
+        var n = +split[split.length - 1];
+        var prefix = n < 10 ? "0" : "";
+        toReturn = toReturn.replace("_" + prefix + n, "");
       }
     }
     return toReturn;
@@ -471,9 +473,14 @@ export class AnalyseFinishComponent implements OnInit, OnDestroy {
         const split = previousName.split("_");
         var newName = this.getRenameName(previousSameFile, true);
         if (split.length > 1 && !isNaN(+split[split.length - 1])) {
-          newName = newName + "_" + (+split[split.length - 1] + 1);
+          var n = +split[split.length - 1] + 1;
+          var prefix = n < 10 ? "0" : "";
+          newName = newName + "_" + prefix + n;
         } else {
-          newName += "_1"
+          newName += "_01"
+          if (!previousSameFile.customRename.includes("_00")) {
+            previousSameFile.customRename += "_00";
+          }
         }
         file.customRename = newName;
         file.wasDuplicate = true;

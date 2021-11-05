@@ -73,6 +73,9 @@ export class BackupRenameComponent implements OnInit, OnDestroy {
   calculMissingFiles() {
     if (this.project == null) return;
     for (const destination of this.destinations) {
+      if (destination.destination == "") {
+        continue;
+      }
       destination.missingFiles = 0;
       destination.missingFilesList = [];
       destination.matching = 0;
