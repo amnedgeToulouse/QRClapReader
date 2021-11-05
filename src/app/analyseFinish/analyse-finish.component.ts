@@ -478,7 +478,7 @@ export class AnalyseFinishComponent implements OnInit, OnDestroy {
           newName = newName + "_" + prefix + n;
         } else {
           newName += "_01"
-          if (!previousSameFile.customRename.includes("_00")) {
+          if (typeof previousSameFile != "undefined" && previousSameFile && !previousSameFile.customRename.includes("_00")) {
             previousSameFile.customRename += "_00";
           }
         }
