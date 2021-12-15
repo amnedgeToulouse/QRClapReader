@@ -142,6 +142,7 @@ export class AnalyseFinishComponent implements OnInit, OnDestroy {
         duration: 3000,
         verticalPosition: 'top'
       });
+      this.updateProject();
     });
   }
 
@@ -366,6 +367,7 @@ export class AnalyseFinishComponent implements OnInit, OnDestroy {
         duration: 3000,
         verticalPosition: 'top'
       });
+      this.updateProject();
     });
   }
 
@@ -635,6 +637,9 @@ export class AnalyseFinishComponent implements OnInit, OnDestroy {
     }).then((project: ProjectFull) => {
       this.project = project;
       this.loaded = true;
+      if (this.project.files.length != 0 && this.project.files[0].order == null) {
+        this.restoreOrder();
+      }
       const qrMissing: ImageFull[] = [];
       for (const file of this.project.files) {
         file.renameIt = file.type != 1;
@@ -695,9 +700,6 @@ export class AnalyseFinishComponent implements OnInit, OnDestroy {
       } else {
         this.updateFile();
         this.loading = false;
-      }
-      if (this.project.files.length != 0 && this.project.files[0].order == null) {
-        this.restoreOrder();
       }
     });
   }
