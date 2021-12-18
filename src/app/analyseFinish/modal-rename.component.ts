@@ -83,7 +83,7 @@ export class ModalRenameComponent implements OnInit {
     } else {
       this.isCinema = false;
     }
-    for (var i = 1; i < 100; i++) {
+    for (var i = 0; i < 100; i++) {
       this.numbers.push(i + "");
     }
   }
