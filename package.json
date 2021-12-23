@@ -9,13 +9,16 @@
     "win": {
       "target": [
         "nsis"
-      ]
+      ],
+      "icon": "public/icon.ico"
     },
     "mac": {
       "hardenedRuntime": true,
       "gatekeeperAssess": false,
       "entitlements": "build/entitlements.mac.plist",
-      "entitlementsInherit": "build/entitlements.mac.plist"
+      "entitlementsInherit": "build/entitlements.mac.plist",
+      "icon": "public/icon.icns",
+      "category": "public.app-category.utilities"
     },
     "nsis": {
       "deleteAppDataOnUninstall": true,
@@ -23,6 +26,9 @@
       "createStartMenuShortcut": true,
       "shortcutName": "QRClap Reader",
       "uninstallDisplayName": "QRClap Reader Uninstall"
+    },
+    "directories": {
+      "buildResources": "public"
     },
     "files": [
       "**/*",
@@ -45,6 +51,7 @@
       "!*.map",
       "!dist/win-unpacked",
       "!save-param.json",
+      "public/**/*",
       "dist/**"
     ],
     "fileAssociations": [
@@ -58,7 +65,7 @@
     ]
   },
   "name": "QRClapReader",
-  "version": "1.0.26",
+  "version": "1.0.27",
   "description": "QRClap Reader allow you to read QR generated from QRClap generator mobile app",
   "homepage": "https://qrclap.com",
   "author": {
