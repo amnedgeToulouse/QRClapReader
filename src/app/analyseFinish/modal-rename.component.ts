@@ -88,6 +88,11 @@ export class ModalRenameComponent implements OnInit {
     }
   }
 
+  checkSpecialChar() {
+    this.cinemaValue.suffix = this.cinemaValue.suffix.replace(/[^a-zA-Z0-9-_ ]/gi, "");
+    this.customRename = this.customRename.replace(/[^a-zA-Z0-9-_ ]/gi, "");
+  }
+
   confirm() {
     if (this.isCinema && !this.parent.isCinemaFormat(this.parent.getCinemaName(this.cinemaValue))) {
       const modalRef = this.modalService.open(ModalComponent);

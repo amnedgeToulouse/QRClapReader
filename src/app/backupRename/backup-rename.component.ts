@@ -111,6 +111,7 @@ export class BackupRenameComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.renderer.send("ask-for-full-permission");
     this.idProject = this.getParam.GetParam('idProject');
     if (this.idProject != "") {
       this.httpRequest.SendRequest({
@@ -285,33 +286,37 @@ export class BackupRenameComponent implements OnInit, OnDestroy {
         return;
       }
       const newFolder = result.filePaths[0];
-      var exist = false;
-      for (var u = 0; u < this.destinations.length; u++) {
-        const destination = this.destinations[u];
-        if (destination.destination != "" &&
-          u != i &&
-          (((destination.destination.includes(newFolder) || newFolder.includes(destination.destination)) &&
-            !this.inSameFolder(destination.destination, newFolder)) || destination.destination == newFolder)) {
-          exist = true;
-          break;
+      if (this.renderer.sendSync("ask-for-folder-permission", newFolder) == "ok") {
+        var exist = false;
+        for (var u = 0; u < this.destinations.length; u++) {
+          const destination = this.destinations[u];
+          if (destination.destination != "" &&
+            u != i &&
+            (((destination.destination.includes(newFolder) || newFolder.includes(destination.destination)) &&
+              !this.inSameFolder(destination.destination, newFolder)) || destination.destination == newFolder)) {
+            exist = true;
+            break;
+          }
         }
+        if (exist) {
+          const modalRef = this.modalService.open(ModalComponent);
+          modalRef.componentInstance.title = "Warning";
+          modalRef.componentInstance.message = "You cannot choose same or include folder destinations";
+          modalRef.componentInstance.actionButtonType = 0;
+          modalRef.componentInstance.canConfirm = false;
+          modalRef.componentInstance.actionCancelButtonMessage = "Understand";
+          modalRef.componentInstance.cancelButtonType = 2;
+          modalRef.result.then(
+            result => { },
+            reason => { }
+          );
+          return;
+        }
+        this.destinations[i].destination = newFolder;
+        this.calculMissingFiles();
+      } else {
+        this.router.navigate(['/'], this.getParam.GetQueryParams());
       }
-      if (exist) {
-        const modalRef = this.modalService.open(ModalComponent);
-        modalRef.componentInstance.title = "Warning";
-        modalRef.componentInstance.message = "You cannot choose same or include folder destinations";
-        modalRef.componentInstance.actionButtonType = 0;
-        modalRef.componentInstance.canConfirm = false;
-        modalRef.componentInstance.actionCancelButtonMessage = "Understand";
-        modalRef.componentInstance.cancelButtonType = 2;
-        modalRef.result.then(
-          result => { },
-          reason => { }
-        );
-        return;
-      }
-      this.destinations[i].destination = newFolder;
-      this.calculMissingFiles();
     });
   }
 

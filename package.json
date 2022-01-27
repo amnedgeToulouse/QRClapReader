@@ -141,6 +141,7 @@
     "md5-file": "5.0.0",
     "ncp": "2.0.0",
     "ngx-electron": "2.2.0",
+    "node-mac-permissions": "2.2.0",
     "node-recursive-directory": "1.2.0",
     "simple-thumbnail": "1.6.5"
   },

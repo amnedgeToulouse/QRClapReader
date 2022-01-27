@@ -7,6 +7,8 @@
                 analysis</button>
             <button (click)="renameFiles()" type="button" class="btn btn-success" *ngIf="project.state != 1">Rename
                 files</button>
+            <button (click)="goToBackupRename()" type="button" class="btn btn-success" *ngIf="project.state == 1">Backup
+                rename</button>
         </div>
         <div class="white-indication-subtitle">
             <p class="m-0">Color code for your files list</p>

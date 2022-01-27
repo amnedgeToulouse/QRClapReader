@@ -524,6 +524,10 @@ export class AnalyseFinishComponent implements OnInit, OnDestroy {
     return t + "." + splitT[splitT.length - 1];
   }
 
+  goToBackupRename() {
+    this.router.navigate(['/backupRename'], this.getParam.GetQueryParams());
+  }
+
   cinemaSplit(value: string, index: number) {
     var regexList = [/[A-Z]|[0-9][0-9]|[A-Z]|[_][A-Z]|[0-9][0-9]|[A-Z]|[_][A-Z]|[0-9][0-9]|[A-Z]/gi, //S01E_P15A_P16A
       /[A-Z]|[0-9][0-9]|[_][A-Z]|[0-9][0-9]|[_][A-Z]|[0-9][0-9]|[A-Z]/gi, //S01_P15_P16A

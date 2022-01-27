@@ -1,100 +1,71 @@
 <div class="modal-header">
-  <h4 class="modal-title">Manual rename file</h4>
-  <button type="button" class="close" data-dismiss="modal" aria-hidden="true"
-      (click)="cancel()">&times;</button>
+    <h4 class="modal-title">Manual rename file</h4>
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true" (click)="cancel()">&times;</button>
 </div>
 <div class="modal-body">
     <div *ngIf="imageToPrint != '' && zoom" style="overflow: auto;max-height: 320px;">
-        <img [src]="imageToPrint"/>
+        <img [src]="imageToPrint" />
     </div>
     <div *ngIf="imageToPrint != '' && !zoom" class="w-100">
-        <img [src]="imageToPrint" style="width:100%"/>
+        <img [src]="imageToPrint" style="width:100%" />
     </div>
-    <button *ngIf="imageToPrint != ''" (click)="zoomAction()" type="button" class="btn btn-primary position-relative float-right" style="margin-top: -60px;margin-right: 25px;">
+    <button *ngIf="imageToPrint != ''" (click)="zoomAction()" type="button"
+        class="btn btn-primary position-relative float-right" style="margin-top: -60px;margin-right: 25px;">
         <span>{{zoomText()}}</span>
     </button>
     <div class="m-auto" style="max-width: 763px;" *ngIf="project.state != 1">
         <ul class="nav nav-pills nav-fill">
             <li class="nav-item">
-            <a [class]="classNav(true)" (click)="switchMode(true)">Cinema</a>
+                <a [class]="classNav(true)" (click)="switchMode(true)">Cinema</a>
             </li>
             <li class="nav-item">
-            <a [class]="classNav(false)" (click)="switchMode(false)">Divers</a>
+                <a [class]="classNav(false)" (click)="switchMode(false)">Divers</a>
             </li>
         </ul>
         <div *ngIf="!isCinema">
             <label class="form-control-label" for="field_name">File name</label>
-            <input required type="text" class="form-control" name="nom" id="field_name"
-                [(ngModel)]="customRename" />
+            <input (keyup)="checkSpecialChar()" (cut)="checkSpecialChar()" (past)="checkSpecialChar()" required
+                type="text" class="form-control" name="nom" id="field_name" [(ngModel)]="customRename" />
         </div>
         <div *ngIf="isCinema">
             <div class="modal-footer d-flex flex-row p-1 mb-2">
-            <ng-select 
-                [items]="letters" 
-                [clearable]="false"
-                style="width: 54px"
-                [(ngModel)]="cinemaValue.scenePrefix">
-            </ng-select>
-            <ng-select
-                class="flex-fill"
-                style="min-width:58px;"
-                [items]="numbers" 
-                [clearable]="false"
-                [(ngModel)]="cinemaValue.scene">
-            </ng-select>
-            <ng-select 
-                [items]="letters" 
-                [clearable]="false"
-                style="width: 54px"
-                [(ngModel)]="cinemaValue.sceneSuffix">
-            </ng-select>
-            <div>
-                _
-            </div>
-            <ng-select 
-                [items]="letters" 
-                [clearable]="false"
-                style="width: 54px"
-                [(ngModel)]="cinemaValue.planPrefix">
-            </ng-select>
-            <ng-select
-                class="flex-fill"
-                style="min-width:58px;"
-                [items]="numbers" 
-                [clearable]="false"
-                [(ngModel)]="cinemaValue.plan">
-            </ng-select>
-            <ng-select 
-                [items]="letters" 
-                [clearable]="false"
-                style="width: 54px"
-                [(ngModel)]="cinemaValue.planSuffix">
-            </ng-select>
-            <div>
-                _
-            </div>
-            <ng-select 
-                [items]="letters" 
-                [clearable]="false"
-                style="width: 54px"
-                [(ngModel)]="cinemaValue.prisePrefix">
-            </ng-select>
-            <ng-select
-                class="flex-fill"
-                style="min-width:58px;"
-                [items]="numbers" 
-                [clearable]="false"
-                [(ngModel)]="cinemaValue.prise">
-            </ng-select>
-            <ng-select 
-                [items]="letters" 
-                [clearable]="false"
-                style="width: 54px"
-                [(ngModel)]="cinemaValue.priseSuffix">
-            </ng-select>
+                <ng-select [items]="letters" [clearable]="false" style="width: 54px"
+                    [(ngModel)]="cinemaValue.scenePrefix">
+                </ng-select>
+                <ng-select class="flex-fill" style="min-width:58px;" [items]="numbers" [clearable]="false"
+                    [(ngModel)]="cinemaValue.scene">
+                </ng-select>
+                <ng-select [items]="letters" [clearable]="false" style="width: 54px"
+                    [(ngModel)]="cinemaValue.sceneSuffix">
+                </ng-select>
+                <div>
+                    _
+                </div>
+                <ng-select [items]="letters" [clearable]="false" style="width: 54px"
+                    [(ngModel)]="cinemaValue.planPrefix">
+                </ng-select>
+                <ng-select class="flex-fill" style="min-width:58px;" [items]="numbers" [clearable]="false"
+                    [(ngModel)]="cinemaValue.plan">
+                </ng-select>
+                <ng-select [items]="letters" [clearable]="false" style="width: 54px"
+                    [(ngModel)]="cinemaValue.planSuffix">
+                </ng-select>
+                <div>
+                    _
+                </div>
+                <ng-select [items]="letters" [clearable]="false" style="width: 54px"
+                    [(ngModel)]="cinemaValue.prisePrefix">
+                </ng-select>
+                <ng-select class="flex-fill" style="min-width:58px;" [items]="numbers" [clearable]="false"
+                    [(ngModel)]="cinemaValue.prise">
+                </ng-select>
+                <ng-select [items]="letters" [clearable]="false" style="width: 54px"
+                    [(ngModel)]="cinemaValue.priseSuffix">
+                </ng-select>
             </div>
             <label class="form-control-label" for="field_suffix">Suffix</label>
             <input required type="text" class="form-control" name="suffix" id="field_suffix"
+                (keyup)="checkSpecialChar()" (cut)="checkSpecialChar()" (past)="checkSpecialChar()"
                 [(ngModel)]="cinemaValue.suffix" />
             <div class="modal-footer mt-4 justify-content-center">
                 <fa-icon [icon]="faCamera" style="color: #ff4081;font-size: x-large;"></fa-icon>
@@ -112,7 +83,8 @@
             <span>Revert name</span>
         </button>
     </div>
-    <button (click)="confirm()" *ngIf="project.state != 1" [disabled]="(customRename == '' || customRename == null) && !isCinema" type="button" class="btn btn-success">
+    <button (click)="confirm()" *ngIf="project.state != 1"
+        [disabled]="(customRename == '' || customRename == null) && !isCinema" type="button" class="btn btn-success">
         <span>Rename</span>
     </button>
 </div>

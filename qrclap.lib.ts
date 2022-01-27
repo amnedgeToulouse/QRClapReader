@@ -500,7 +500,6 @@ var sendQR = (file, qr, event, resolveMain = null) => {
                 "Authorization": "Bearer " + token
             }
         }
-
         const req = http.request(options, res => {
             if (!inProgress) {
                 resolveMain(null);
@@ -522,7 +521,9 @@ var sendQR = (file, qr, event, resolveMain = null) => {
                     if (projectReturnedI == -1) {
                         resolveMain(newImage);
                     } else {
-                        sendQR(projectReturned.files[projectReturnedI], projectReturned.files[projectReturnedI].images[projectReturnedQRI], event, resolveMain)
+                        sendQR(projectReturned.files[projectReturnedI], projectReturned.files[projectReturnedI].images[projectReturnedQRI], event, resolveMain).catch((error) => {
+                            console.log(error);
+                        });
                     }
                 } else {
                     error(res);
@@ -1004,4 +1005,21 @@ ipcMain.on("get-qr-clap", (event, arg) => {
 
 ipcMain.on("contact-us", (event, arg) => {
     require('electron').shell.openExternal("https://qrclap.com/#sec-edf1");
+});
+
+ipcMain.on("ask-for-full-permission", (event, arg) => {
+    if (os.type() === "Darwin") {
+        require('node-mac-permissions').askForFullDiskAccess();
+    }
+});
+
+ipcMain.on("ask-for-folder-permission", (event, arg) => {
+    if (os.type() === "Darwin") {
+        require('node-mac-permissions').askForFoldersAccess(arg).then(status => {
+            console.log(`Access to Desktop is ${status}`)
+            event.returnValue = "ok";
+        });
+    } else {
+        event.returnValue = "ok";
+    }
 });
