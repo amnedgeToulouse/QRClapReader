@@ -76,4 +76,12 @@ export class ConnexionComponent implements OnInit {
     return this.saveParam.GetParam("firstConnexion") != "" || true;
   }
 
+  createAccount() {
+    this.renderer.send("create-account");
+  }
+
+  forgotPassword() {
+    this.renderer.send("forgot-password");
+  }
+
 }

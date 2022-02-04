@@ -59,6 +59,22 @@
           </div>
           <input type="hidden" value="" name="recaptchaResponse" />
         </div>
+        <!-- <div>
+          <div (click)="createAccount()"
+            style="float: left; margin-left: 20px; color: #f1c50e; cursor: pointer; user-select: none;">Need an account ?
+          </div>
+          <div (click)="forgotPassword()"
+            style="float: left; margin-left: 20px; color: #f1c50e; cursor: pointer; user-select: none;">Forgot password ?
+          </div>
+        </div> -->
+        <div style="display: inline-flex; float: right;">
+          <div (click)="createAccount()" style="width: 160px; color: #f1c50e; cursor: pointer; user-select: none;">Need
+            an account ?
+          </div>
+          <div (click)="forgotPassword()" style="width: 160px; color: #f1c50e; cursor: pointer; user-select: none;">
+            Forgot password ?
+          </div>
+        </div>
         <div *ngIf="error != ''" style="
             width: 704px;
             height: 64px;

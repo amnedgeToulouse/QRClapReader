@@ -1007,6 +1007,14 @@ ipcMain.on("contact-us", (event, arg) => {
     require('electron').shell.openExternal("https://qrclap.com/#sec-edf1");
 });
 
+ipcMain.on("create-account", (event, arg) => {
+    require('electron').shell.openExternal("https://qrclap.com/get-qrclap");
+});
+
+ipcMain.on("forgot-password", (event, arg) => {
+    require('electron').shell.openExternal("https://qrclap.com/wp-login.php?action=lostpassword");
+});
+
 ipcMain.on("ask-for-full-permission", (event, arg) => {
     if (os.type() === "Darwin") {
         require('node-mac-permissions').askForFullDiskAccess();
