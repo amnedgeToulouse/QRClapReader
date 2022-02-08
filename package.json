@@ -65,7 +65,7 @@
     ]
   },
   "name": "QRClapReader",
-  "version": "1.0.28",
+  "version": "1.0.29",
   "description": "QRClap Reader allow you to read QR generated from QRClap generator mobile app",
   "homepage": "https://qrclap.com",
   "author": {

@@ -513,11 +513,11 @@ var sendQR = (file, qr, event, resolveMain = null) => {
             res.on("end", () => {
                 if (res.statusCode == 200) {
                     const newImage = JSON.parse(body);
-                    if (newImage.type == 0) {
+                    if (newImage.type == 0 || newImage.type == 1) {
                         goToNextImage();
-                    } else if (newImage.type == 1) {
+                    }/* else if (newImage.type == 1) {
                         goToNextFile();
-                    }
+                    }*/
                     if (projectReturnedI == -1) {
                         resolveMain(newImage);
                     } else {
