@@ -742,7 +742,7 @@ export class AnalyseFinishComponent implements OnInit, OnDestroy {
     if (NavBarComponent.NAV_BAR.getQrConsumption().id != null) {
       modalRef.componentInstance.message += "It will use " + nbRename + " QR stock of your monthly " + NavBarComponent.NAV_BAR.getQrConsumption().maxQuantity + " QR stock.";
     } else {
-      modalRef.componentInstance.message += "t will not use your monthly " + NavBarComponent.NAV_BAR.getQrConsumption().maxQuantity + " QR stock because you are in test mode.";
+      modalRef.componentInstance.message += "It will not use your monthly " + NavBarComponent.NAV_BAR.getQrConsumption().maxQuantity + " QR stock because you are in test mode.";
     }
     modalRef.componentInstance.actionButtonMessage = "Rename files";
     modalRef.componentInstance.actionButtonType = 0;

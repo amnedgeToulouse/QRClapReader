@@ -10,7 +10,8 @@
     </div>
     <div *ngIf="getQrConsumption()" class="p-2" style="width: 310px; margin-top: 5px">
       <span class="black-indication-text">QR Stock: </span>
-      <span *ngIf="getQrConsumption().id != null" class="yellow-indication-text">{{ getQrConsumption().quantity }}/{{
+      <span *ngIf="getQrConsumption().id != null" class="yellow-indication-text">{{ getQrConsumption().maxQuantity -
+        getQrConsumption().quantity }}/{{
         getQrConsumption().maxQuantity
         }}</span>
       <span *ngIf="getQrConsumption().id == null" class="yellow-indication-text">Test mode no limit</span>
