@@ -8,6 +8,17 @@ require('./qrclap.lib.ts');
 // Initialize remote module
 require('@electron/remote/main').initialize();
 
+
+let windows = {
+  list: [],
+  create: (file) => {
+    if (file) {
+        windows.list.push(file)
+    }
+  }
+};
+
+let initOpenFileQueue = [];
 let win: BrowserWindow = null;
 const args = process.argv.slice(1),
   serve = args.some(val => val === '--serve');
@@ -59,6 +70,13 @@ function createWindow(): BrowserWindow {
   win.once('ready-to-show', () => {
     autoUpdater.checkForUpdatesAndNotify();
   });
+  if (initOpenFileQueue.length) {
+    initOpenFileQueue.forEach((file) => windows.create(file));
+  }
+  
+  if (windows.list.length === 0) {
+    windows.create(null);
+  }
   return win;
 }
 
@@ -100,6 +118,23 @@ try {
 
   ipcMain.on('restart_app', () => {
     autoUpdater.quitAndInstall();
+  });
+  
+  // Attempt to bind file opening #2
+  app.on('will-finish-launching', () => {
+    // Event fired When someone drags files onto the icon while your app is running
+    app.on("open-file", (event, file) => {
+      if (app.isReady() === false) {
+        initOpenFileQueue.push(file);
+      } else {
+        windows.create(file);
+      };
+      event.preventDefault();
+    });
+  });
+
+  ipcMain.on("mac-files-associated", (event, arg) => {
+      event.returnValue = windows.list;
   });
 
 } catch (e) {

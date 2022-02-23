@@ -111,7 +111,7 @@ export class BackupRenameComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.renderer.send("ask-for-full-permission");
+    //this.renderer.send("ask-for-full-permission");
     this.idProject = this.getParam.GetParam('idProject');
     if (this.idProject != "") {
       this.httpRequest.SendRequest({
@@ -286,7 +286,7 @@ export class BackupRenameComponent implements OnInit, OnDestroy {
         return;
       }
       const newFolder = result.filePaths[0];
-      if (this.renderer.sendSync("ask-for-folder-permission", newFolder) == "ok") {
+      //if (this.renderer.sendSync("ask-for-folder-permission", newFolder) == "ok") {
         var exist = false;
         for (var u = 0; u < this.destinations.length; u++) {
           const destination = this.destinations[u];
@@ -314,9 +314,9 @@ export class BackupRenameComponent implements OnInit, OnDestroy {
         }
         this.destinations[i].destination = newFolder;
         this.calculMissingFiles();
-      } else {
+      /*} else {
         this.router.navigate(['/'], this.getParam.GetQueryParams());
-      }
+      }*/
     });
   }
 

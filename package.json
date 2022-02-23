@@ -16,7 +16,7 @@
       "hardenedRuntime": true,
       "gatekeeperAssess": false,
       "entitlements": "build/entitlements.mac.plist",
-      "entitlementsInherit": "build/entitlements.mac.plist",
+      "entitlementsInherit": "build/entitlements.mac.inherit.plist",
       "icon": "public/icon.icns",
       "category": "public.app-category.utilities"
     },
@@ -60,12 +60,13 @@
         "description": "QRClap file to do a backup rename",
         "ext": [
           "qrc"
-        ]
+        ],
+        "role": "Editor"
       }
     ]
   },
   "name": "QRClapReader",
-  "version": "1.0.30",
+  "version": "1.0.31",
   "description": "QRClap Reader allow you to read QR generated from QRClap generator mobile app",
   "homepage": "https://qrclap.com",
   "author": {

@@ -1017,7 +1017,9 @@ ipcMain.on("forgot-password", (event, arg) => {
 
 ipcMain.on("ask-for-full-permission", (event, arg) => {
     if (os.type() === "Darwin") {
-        require('node-mac-permissions').askForFullDiskAccess();
+        const status = require('node-mac-permissions').getAuthStatus('full-disk-access')
+        console.log(`Access to full-disk-access is ${status}`)
+        if(status === "denied") require('node-mac-permissions').askForFullDiskAccess();
     }
 });
 
