@@ -255,7 +255,7 @@ var startProcessThumbnail = (event) => {
                             endOfFile = false;
                         }
                         var time = Date.now() + "-" + Math.round(Math.random() * 50000);
-                        createTmpPath(projectId, projectName);
+                        createTmpPath(projectName);
                         var dir = os.tmpdir() + "/QRClap/" /*+ projectId + "/"*/ + projectName;
                         dir = dir.replace(/\\/g, "/");
                         var fileImage = dir + "/" + time + ".jpg";
@@ -654,7 +654,7 @@ var httpRequest = (arg, event = null) => {
 }
 
 ipcMain.on("save-base64-image-disk", (event, arg) => {
-    createTmpPath(arg.projectId, arg.projectName);
+    createTmpPath(arg.projectName);
     const split = arg.path.split('/');
     const val = split[split.length - 1];
     var path = os.tmpdir() + "/QRClap/" /*+ arg.projectId + "/"*/ + arg.projectName + "/" + val;
@@ -666,7 +666,7 @@ ipcMain.on("save-base64-image-disk", (event, arg) => {
     });
 });
 
-const createTmpPath = (projectId, projectName) => {
+const createTmpPath = (projectName) => {
     var dirTmp = os.tmpdir() + "/QRClap";
     dirTmp = dirTmp.replace(/\\/g, "/");
     /*var dirProject = dirTmp + "/" + projectId;
@@ -685,7 +685,7 @@ const createTmpPath = (projectId, projectName) => {
 };
 
 ipcMain.on("get-image-data", (event, arg) => {
-    createTmpPath(arg.projectId, arg.projectName);
+    createTmpPath(arg.projectName);
     const split = arg.relativePath.split('/');
     const val = split[split.length - 1];
     var fileImage = os.tmpdir() + "/QRClap/" /*+ arg.projectId + "/"*/ + arg.projectName + "/" + val;
