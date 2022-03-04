@@ -255,14 +255,9 @@ var startProcessThumbnail = (event) => {
                             endOfFile = false;
                         }
                         var time = Date.now() + "-" + Math.round(Math.random() * 50000);
-                        var dir = os.tmpdir() + "/QRClap/" + projectName;
+                        createTmpPath(projectId, projectName);
+                        var dir = os.tmpdir() + "/QRClap/" /*+ projectId + "/"*/ + projectName;
                         dir = dir.replace(/\\/g, "/");
-                        if (!fs.existsSync(os.tmpdir() + "/QRClap")) {
-                            fs.mkdirSync(os.tmpdir() + "/QRClap");
-                        }
-                        if (!fs.existsSync(dir)) {
-                            fs.mkdirSync(dir);
-                        }
                         var fileImage = dir + "/" + time + ".jpg";
                         event.reply(
                             "debug",
@@ -659,27 +654,42 @@ var httpRequest = (arg, event = null) => {
 }
 
 ipcMain.on("save-base64-image-disk", (event, arg) => {
-    createTmpPath(arg.projectName);
-    fs.writeFile(os.tmpdir() + arg.path, arg.base64Data, 'base64', function (err) {
+    createTmpPath(arg.projectId, arg.projectName);
+    const split = arg.path.split('/');
+    const val = split[split.length - 1];
+    var path = os.tmpdir() + "/QRClap/" /*+ arg.projectId + "/"*/ + arg.projectName + "/" + val;
+    path = path.replace(/\\/g, "/");
+    console.log("path: " + path);
+    fs.writeFile(path, arg.base64Data, 'base64', function (err) {
         event.returnValue = err;
         console.log(err);
     });
 });
 
-const createTmpPath = (projectName) => {
-    var dir = os.tmpdir() + "/QRClap/" + projectName;
+const createTmpPath = (projectId, projectName) => {
+    var dirTmp = os.tmpdir() + "/QRClap";
+    dirTmp = dirTmp.replace(/\\/g, "/");
+    /*var dirProject = dirTmp + "/" + projectId;
+    dirProject = dirProject.replace(/\\/g, "/");*/
+    var dir = dirTmp + "/" + projectName;
     dir = dir.replace(/\\/g, "/");
-    if (!fs.existsSync(os.tmpdir() + "/QRClap")) {
-        fs.mkdirSync(os.tmpdir() + "/QRClap");
+    if (!fs.existsSync(dirTmp)) {
+        fs.mkdirSync(dirTmp);
     }
+    /*if (!fs.existsSync(dirProject)) {
+        fs.mkdirSync(dirProject);
+    }*/
     if (!fs.existsSync(dir)) {
         fs.mkdirSync(dir);
     }
 };
 
 ipcMain.on("get-image-data", (event, arg) => {
-    createTmpPath(arg.projectName);
-    var fileImage = os.tmpdir() + arg.relativePath;
+    createTmpPath(arg.projectId, arg.projectName);
+    const split = arg.relativePath.split('/');
+    const val = split[split.length - 1];
+    var fileImage = os.tmpdir() + "/QRClap/" /*+ arg.projectId + "/"*/ + arg.projectName + "/" + val;
+    fileImage = fileImage.replace(/\\/g, "/");
     if (fs.existsSync(fileImage)) {
         event.returnValue = base64_encode(fileImage);
     } else {
@@ -1019,7 +1029,7 @@ ipcMain.on("ask-for-full-permission", (event, arg) => {
     if (os.type() === "Darwin") {
         const status = require('node-mac-permissions').getAuthStatus('full-disk-access')
         console.log(`Access to full-disk-access is ${status}`)
-        if(status === "denied") require('node-mac-permissions').askForFullDiskAccess();
+        if (status === "denied") require('node-mac-permissions').askForFullDiskAccess();
     }
 });
 

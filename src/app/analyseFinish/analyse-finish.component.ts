@@ -347,7 +347,7 @@ export class AnalyseFinishComponent implements OnInit, OnDestroy {
       } else if (projectClone.files[i].renameIt && projectClone.files[i].isChild && projectClone.files[i].type != 2) {
         projectClone.files[i].type = 3;
       }
-      projectClone.files[i].tmpName = projectClone.files[i].type == 0 ? projectClone.files[i].customRename : null;
+      projectClone.files[i].tmpName = projectClone.files[i].type == 0 || projectClone.files[i].renameByHand == 1 ? projectClone.files[i].customRename : null;
       projectClone.files[i].needTmpName = true;
       projectClone.files[i].qrs = [];
     }
@@ -412,7 +412,7 @@ export class AnalyseFinishComponent implements OnInit, OnDestroy {
   nameByBefore(file: FileFull, i) {
     if (file.type == 2) return;
     file.needManualRename = false;
-    file.previousIs = null;
+    //file.previousIs = null;
     if ((file.mode == 2 || file.mode == 3)) {
       if (this.getRenameName(file) == '' || this.getRenameName(file) == 'Need manual rename') {
         file.needManualRename = true;
@@ -452,7 +452,7 @@ export class AnalyseFinishComponent implements OnInit, OnDestroy {
             if (renameIncrement || (+cinemaSplitBefore.prise >= +cinemaSplitFile.prise || +cinemaSplitBefore.prise + 1 == +cinemaSplitFile.prise)) {
               cinemaSplitBefore.prise = "" + (+cinemaSplitBefore.prise + 1);
               file.customRename = this.getCinemaName(cinemaSplitBefore);
-              file.renameByHand = 0;
+              //file.renameByHand = 0;
             }
           }
         } else {
@@ -478,6 +478,11 @@ export class AnalyseFinishComponent implements OnInit, OnDestroy {
           var n = +split[split.length - 1] + 1;
           var prefix = n < 10 ? "0" : "";
           newName = newName + "_" + prefix + n;
+          /*const previousFileTest = this.findPreviousValidFile(i, file, null);
+          file.previousIs = {
+            name: this.getRenameName(previousFileTest),
+            index: this.indexOfFile(previousFileTest)
+          }*/
         } else {
           newName += "_01"
           if (!previousName.includes("_00") || (typeof previousSameFile.customRename != "undefined" && previousSameFile.customRename && !previousSameFile.customRename.includes("_00"))) {
@@ -630,6 +635,7 @@ export class AnalyseFinishComponent implements OnInit, OnDestroy {
 
   updateProject() {
     this.loading = true;
+    const ProjectName = this.getParam.GetParam('selectedProject');
     this.httpRequest.SendRequest({
       host: Constant.HOST_API,
       port: Constant.PORT_API,
@@ -657,7 +663,8 @@ export class AnalyseFinishComponent implements OnInit, OnDestroy {
         }
         for (const qr of file.qrs) {
           const qrData = this.renderer.sendSync("get-image-data", {
-            projectName: this.getParam.GetParam('selectedProject'),
+            projectId: project.id,
+            projectName: project.name,
             relativePath: qr.relativePath
           });
           if (qrData == "") {
@@ -687,7 +694,8 @@ export class AnalyseFinishComponent implements OnInit, OnDestroy {
                 if (qr.id == qrMiss.id) {
                   qr.dataBase64 = "data:image/jpg;base64," + qrMiss.dataBase64;
                   const err = this.renderer.sendSync("save-base64-image-disk", {
-                    projectName: this.getParam.GetParam('selectedProject'),
+                    projectId: project.id,
+                    projectName: project.name,
                     path: qr.relativePath,
                     base64Data: qrMiss.dataBase64
                   });
