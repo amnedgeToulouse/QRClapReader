@@ -19,7 +19,17 @@ export class ConnexionComponent implements OnInit {
   password = ""; //904054ff3a506f062af1b868463701e85095fd2523f99196bf6da11372d8d58f
   loading = true;
   error = "";
+  errorAccount = "";
+  success = "";
+  subscription = false;
   renderer: IpcRenderer;
+
+  emailAccount = "";
+  passwordAccount = "";
+  firstnameAccount = "";
+  lastnameAccount = "";
+  companyAccount = "";
+  whyAccount = "";
 
   constructor(private router: Router,
     private httpRequest: HttpRequestService,
@@ -54,6 +64,7 @@ export class ConnexionComponent implements OnInit {
       })
       .catch((error) => {
         this.error = error;
+        this.success = "";
       }).finally(() => {
         this.loading = false;
       });
@@ -62,6 +73,22 @@ export class ConnexionComponent implements OnInit {
   validateEmail(email): boolean {
     const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(String(email).toLowerCase());
+  }
+
+  submitAccountCreation() {
+    this.loading = true;
+    this.httpRequest.CreateAccount(this.emailAccount, this.passwordAccount, this.firstnameAccount, this.lastnameAccount, this.companyAccount, this.whyAccount).then(data => {
+      console.log(data);
+      this.loading = false;
+      this.errorAccount = "";
+      this.error = "";
+      this.success = "Your account has been successfully created ! You can connect now.";
+      this.subscription = false;
+    }).catch(error => {
+      this.errorAccount = "This email is already taken or invalid or your password only contain 5 characters";
+      this.success = "";
+      this.loading = false;
+    });
   }
 
   backupRename() {
@@ -77,7 +104,11 @@ export class ConnexionComponent implements OnInit {
   }
 
   createAccount() {
-    this.renderer.send("create-account");
+    this.subscription = true;
+  }
+
+  home() {
+    this.subscription = false;
   }
 
   forgotPassword() {

@@ -1,5 +1,6 @@
 <div class="background-base-no-navbar p-3">
-  <section class="u-align-center u-clearfix u-palette-5-dark-3 u-section-1" id="carousel_828c" *ngIf="!loading">
+  <section class="u-align-center u-clearfix u-palette-5-dark-3 u-section-1" id="carousel_828c"
+    *ngIf="!loading && !subscription">
     <div class="u-clearfix u-sheet u-valign-middle u-sheet-1">
       <p>
         <img [src]="getLogo()" width="484" height="204" alt="" />
@@ -85,10 +86,74 @@
           ">
           {{ error }}
         </div>
+        <div *ngIf="success != ''" style="
+            width: 704px;
+            height: 64px;
+            background-color: #00e000;
+            text-align: center;
+            padding: 20px 0px 20px 0px;
+            margin-top: 35px;
+          ">
+          {{ success }}
+        </div>
       </div>
     </div>
     <div class="button-action" (click)="backupRename()">Rename Backup</div>
     <!-- <div class="button-action button-action-secondary" style="right: 280px;" *ngIf="canDoBackup()" (click)="doBackup()">Do Backup</div> -->
   </section>
+  <div *ngIf="subscription && !loading" style="overflow: visible;">
+    <div class="u-clearfix u-sheet u-valign-middle u-sheet-1">
+      <p>
+        <img [src]="getLogo()" width="178" height="75" alt="" />
+        <span *ngIf="errorAccount != ''" style="
+                  background-color: #f95d51;
+                  text-align: center;
+                  padding: 20px 0px 20px 0px;
+                ">
+          {{ errorAccount }}
+        </span>
+      </p>
+      <!-- <h3 class="u-custom-font u-font-lato u-text u-text-white u-text-2">
+        It's time to bring your post-production to the next level !
+      </h3> -->
+      <div style="color: white;">
+        <div class="form-group" style="margin: 0 auto;">
+          <label for="InputEmail">Email Address*</label>
+          <input [(ngModel)]="emailAccount" type="email" class="form-control" id="InputEmail"
+            aria-describedby="emailHelp" placeholder="Enter email">
+        </div>
+        <div class="form-group">
+          <label for="InputPassword">Password*</label>
+          <input [(ngModel)]="passwordAccount" type="password" class="form-control" id="InputPassword"
+            placeholder="Password">
+        </div>
+        <div class="form-group">
+          <label for="InputFirstName">First Name</label>
+          <input [(ngModel)]="firstnameAccount" type="text" class="form-control" id="InputFirstName"
+            placeholder="Enter First Name">
+        </div>
+        <div class="form-group">
+          <label for="InputLastName">Last Name</label>
+          <input [(ngModel)]="lastnameAccount" type="text" class="form-control" id="InputLastName"
+            placeholder="Enter Last Name">
+        </div>
+        <div class="form-group">
+          <label for="InputCompany">Company</label>
+          <input [(ngModel)]="companyAccount" type="text" class="form-control" id="InputCompany"
+            placeholder="Enter Your Company">
+        </div>
+        <div class="form-group">
+          <label for="InputWhy">Why you want to use QRClap ? (FR/EN)</label>
+          <textarea [(ngModel)]="whyAccount" class="form-control" id="InputWhy"
+            placeholder="Tell Us More About You"></textarea>
+        </div>
+        <button (click)="home()" type="button" style="background-color: #f1c50e !important; float:left; color: black;"
+          class="btn btn-primary">Close</button>
+        <button (click)="submitAccountCreation()" type="submit"
+          style="background-color: #f1c50e !important; float:right; color: black;"
+          class="btn btn-primary">Submit</button>
+      </div>
+    </div>
+  </div>
   <app-loader [loading]="loading"></app-loader>
 </div>

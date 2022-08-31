@@ -589,7 +589,9 @@ var finishProcess = (event) => {
 };
 
 ipcMain.on("http-request", (event, arg) => {
-    httpRequest(arg, event);
+    httpRequest(arg, event).catch(error => {
+        console.log(error);
+    });
 });
 
 var httpRequest = (arg, event = null) => {

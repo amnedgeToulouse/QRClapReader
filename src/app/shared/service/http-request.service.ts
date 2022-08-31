@@ -149,6 +149,38 @@ export class HttpRequestService {
         });
     }
 
+    CreateAccount(email, password, firstname, lastname, company, why) {
+        return new Promise((resolve, error) => {
+            let dataToSend: any = {
+                mail: email,
+                password: password,
+                firstname: firstname,
+                lastname: lastname,
+                company: company,
+                why: why
+            };
+            this.SendRequest({
+                host: Constant.HOST_API,
+                port: Constant.PORT_API,
+                data: dataToSend,
+                method: "POST",
+                path: "/wordpress/createaccount",
+                token: null,
+                processOtherError: false
+            }).then((data: AccountRegisterWordpress) => {
+                console.log(data);
+                resolve(data);
+            }).catch((errorCode) => {
+                if (errorCode == 400) {
+                    error("Your credentials are not correct.");
+                }
+                if (errorCode != 200) {
+                    error("An error occured, please retry.");
+                }
+            })
+        });
+    }
+
     popupNeedToken = false;
     CheckNeedToken() {
         if (!this.router.url.includes("/connexion") && !this.CheckToken() && !this.popupNeedToken && !this.router.url.includes("/backupRename") && !this.router.url.includes("/doBackup")) {
@@ -201,6 +233,17 @@ export class HttpRequestParams {
 export interface Token {
     success: boolean;
     data: TokenData;
+}
+
+export interface AccountRegisterWordpress {
+    id: number;
+    message: string;
+    data: DataRegister;
+}
+
+export interface DataRegister {
+    message: string;
+    errorCode: number;
 }
 
 export interface TokenData {
